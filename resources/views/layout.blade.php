@@ -54,9 +54,9 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="{{ route('welcome') }}" class="brand-link">
-      <img src="{{ asset('img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+    <a href="{{ route('dashboard') }}" class="brand-link">
+      <img src="{{ asset('img/AdminLTELogo.png') }}" alt="Marchés publics Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">Marchés publics</span>
     </a>
 
     <!-- Sidebar -->
@@ -68,7 +68,7 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="{{ route('welcome') }}" class="nav-link">
+            <a href="{{ route('dashboard') }}" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Tableau de bord
@@ -77,15 +77,23 @@
           </li>
           <li class="nav-item">
             <a href="{{ route('market-types.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <i class="nav-icon fas fa-tasks"></i>
               <p>
                 Types de marchés
               </p>
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{ route('markets.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-stream"></i>
+              <p>
+                Marchés
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ route('audit-settings.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <i class="nav-icon fas fa-cog"></i>
               <p>
                 Paramètres d'audit
               </p>
@@ -105,7 +113,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Tableau de bord</h1>
+            <h1>@yield('header', '')</h1>
           </div>
           <div class="col-sm-6">
             
@@ -148,7 +156,7 @@
 <!-- jQuery -->
 <script src="{{ asset('js/jquery.min.js') }}"></script>
 <!-- Bootstrap 4 -->
-<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.bundle.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('js/adminlte.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->

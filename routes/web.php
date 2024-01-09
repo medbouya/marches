@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuditSettingController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MarketController;
 use App\Http\Controllers\MarketTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,10 +17,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::resource('market-types', MarketTypeController::class);
 
 Route::resource('audit-settings', AuditSettingController::class);
+
+Route::resource('markets', MarketController::class);
