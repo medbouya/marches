@@ -1,0 +1,34 @@
+<!-- resources/views/market_types/index.blade.php -->
+
+@extends('layout')
+
+@section('content')
+    <h1>Types de marchés</h1>
+    <a href="{{ route('market-types.create') }}" class="btn btn-primary">Nouveau type de marchés</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($marketTypes as $marketType)
+                <tr>
+                    <td>{{ $marketType->id }}</td>
+                    <td>{{ $marketType->name }}</td>
+                    <td>
+                        <a href="{{ route('market-types.edit', $marketType->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <form action="{{ route('market-types.destroy', $marketType->id) }}" method="post" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endsection
