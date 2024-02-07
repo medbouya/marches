@@ -22,4 +22,14 @@ class Market extends Model
     {
         return $this->belongsTo(MarketType::class);
     }
+
+    public function modePassation()
+    {
+        return $this->belongsTo(ModePassation::class, 'passation_mode');
+    }
+
+    public function autoriteContractante()
+    {
+        return $this->belongsTo(AutoriteContractante::class, 'authority_contracting');
+    }
 }

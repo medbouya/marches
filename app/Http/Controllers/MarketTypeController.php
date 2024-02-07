@@ -29,6 +29,12 @@ class MarketTypeController extends Controller
         return redirect()->route('market-types.index')->with('success', 'Market type created successfully');
     }
 
+    public function edit($id)
+    {
+        $marketType = MarketType::findOrFail($id);
+        return view('market_types.edit', compact('marketType'));
+    }
+
     public function update(Request $request, MarketType $marketType)
     {
         $request->validate([

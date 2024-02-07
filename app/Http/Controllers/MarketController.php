@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AutoriteContractante;
 use App\Models\Market;
 use App\Models\MarketType;
+use App\Models\ModePassation;
 use Illuminate\Http\Request;
 
 class MarketController extends Controller
@@ -15,7 +17,7 @@ class MarketController extends Controller
      */
     public function index()
     {
-        $markets = Market::all();
+        $markets = Market::with('marketType', 'modePassation', 'autoriteContractante')->get();
         return view('markets.index', compact('markets'));
     }
 
@@ -27,7 +29,9 @@ class MarketController extends Controller
     public function create()
     {
         $marketTypes = MarketType::all(); // Fetch market types from the database
-        return view('markets.create', compact('marketTypes'));
+        $modePassations = ModePassation::all(); // Fetch mode passations
+        $autoriteContractantes = AutoriteContractante::all(); // Fetch autorite contractantes
+        return view('markets.create', compact('marketTypes', 'modePassations', 'autoriteContractantes'));
     }
 
     /**
@@ -54,7 +58,7 @@ class MarketController extends Controller
 
         // Redirect or do anything else after saving...
 
-        return redirect()->route('markets.index')->with('success', 'Market created successfully');
+        return redirect()->route('markets.index')->with('success', 'Marché ajouté avec succès.');
     }
 
     /**
@@ -78,7 +82,9 @@ class MarketController extends Controller
     {
         $market = Market::findOrFail($id);
         $marketTypes = MarketType::all();
-        return view('markets.edit', compact('market', 'marketTypes'));
+        $modePassations = ModePassation::all(); // Fetch mode passations
+        $autoriteContractantes = AutoriteContractante::all(); // Fetch autorite contractantes
+        return view('markets.edit', compact('market', 'marketTypes', 'modePassations', 'autoriteContractantes'));
     }
 
     /**
@@ -99,6 +105,8 @@ class MarketController extends Controller
             'authority_contracting' => 'required|string',
             'passation_mode' => 'required|string',
             'market_type_id' => 'required|exists:market_types,id', // Adjust the validation rule based on your needs
+            'passation_mode' => 'required|exists:mode_passations,id',
+            'authority_contracting' => 'required|exists:autorite_contractantes,id',
             // Add other validation rules as needed
         ]);
 
@@ -107,7 +115,7 @@ class MarketController extends Controller
 
         // Redirect or do anything else after updating...
 
-        return redirect()->route('markets.index')->with('success', 'Market updated successfully');
+        return redirect()->route('markets.index')->with('success', 'Marché mis à jour avec succès.');
     }
 
     /**
@@ -124,6 +132,6 @@ class MarketController extends Controller
 
         // Redirect or do anything else after deleting...
 
-        return redirect()->route('markets.index')->with('success', 'Market deleted successfully');
+        return redirect()->route('markets.index')->with('success', 'Marché supprimé avec succès.');
     }
 }

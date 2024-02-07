@@ -15,6 +15,6 @@
 
         <!-- Add more fields as needed -->
 
-        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="submit" class="btn btn-primary">Mettre à jour</button>
     </form>
 @endsection

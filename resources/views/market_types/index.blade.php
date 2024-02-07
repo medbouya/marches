@@ -20,11 +20,11 @@
                     <td>{{ $marketType->id }}</td>
                     <td>{{ $marketType->name }}</td>
                     <td>
-                        <a href="{{ route('market-types.edit', $marketType->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{{ route('market-types.edit', $marketType->id) }}" class="btn btn-sm btn-warning">Modifier</a>
                         <form action="{{ route('market-types.destroy', $marketType->id) }}" method="post" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Etes-vous sûr?')">Supprimer</button>
                         </form>
                     </td>
                 </tr>

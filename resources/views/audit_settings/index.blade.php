@@ -13,8 +13,10 @@
             <thead>
                 <tr>
                     <th>Année</th>
-                    <th>Seuil des marchés</th>
+                    <th>Seuil d'audition</th>
+                    <th>Seuil d'exclusion</th>
                     <th>Type de marchés</th>
+                    <th>Modes de passation</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +35,13 @@
                             </h3>
                         </td>
                         <td>
+                            <h3>
+                                <span class="badge badge-danger">
+                                    {{ number_format($auditSetting->threshold_exclusion, 2, '.', ',') }} MRU
+                                </span>
+                            </h3>
+                        </td>
+                        <td>
                             @foreach ($auditSetting->marketTypes as $marketType)
                                 <h5>
                                     <span class="badge badge-warning">
@@ -40,6 +49,15 @@
                                     </span>
                                 </h5> @if (!$loop->last)  @endif
                             @endforeach
+                        </td>
+                        <td>
+                            <ul class="list-group">
+                                @foreach ($modesPassation as $modePassation)
+                                    <li class="list-group-item">
+                                        <i>{{ $modePassation->name }}</i>: <b>{{ $modePassation->percentage }}%</b>
+                                    </li>
+                                @endforeach
+                            </ul>
                         </td>
                     </tr>
                 @endforeach

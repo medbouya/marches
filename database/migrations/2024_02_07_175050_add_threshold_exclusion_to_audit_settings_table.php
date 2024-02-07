@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('password_resets', function (Blueprint $table) {
-            $table->string('email')->index();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+        Schema::table('audit_settings', function (Blueprint $table) {
+            $table->bigInteger('threshold_exclusion')->default(1500000)->after('minimum_amount_to_audit');
         });
     }
 
@@ -27,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('password_resets');
+        Schema::table('audit_settings', function (Blueprint $table) {
+            $table->dropColumn('threshold_exclusion');
+        });
     }
 };

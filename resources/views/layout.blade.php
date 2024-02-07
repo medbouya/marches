@@ -76,12 +76,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ route('market-types.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-tasks"></i>
-              <p>
-                Types de marchés
-              </p>
-            </a>
+            
           </li>
           <li class="nav-item">
             <a href="{{ route('markets.index') }}" class="nav-link">
@@ -90,6 +85,41 @@
                 Marchés
               </p>
             </a>
+          </li>
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-tasks"></i>
+                <p>
+                    Référentiel
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item sub-nav">
+                    <a href="{{ route('market-types.index') }}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>
+                        Types de marchés
+                      </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('mode-passations.index') }}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                      Modes de passation
+                    </p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('autorite-contractantes.index') }}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                      Autorités contractantes
+                    </p>
+                  </a>
+                </li>
+            </ul>
           </li>
           <li class="nav-item">
             <a href="{{ route('audit-settings.index') }}" class="nav-link">
@@ -129,6 +159,17 @@
       <div class="card">
         
         <div class="card-body">
+          @if(Session::has('success'))
+            <div class="alert alert-success">
+              {{ Session::get('success') }}
+            </div>
+          @endif
+
+          @if(Session::has('error'))
+            <div class="alert alert-danger">
+              {{ Session::get('error') }}
+            </div>
+          @endif
           @yield('content')
         </div>
         <!-- /.card-footer-->

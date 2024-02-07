@@ -24,8 +24,8 @@
                         <td>{{ $market->title }}</td>
                         <td>{{ $market->year }}</td>
                         <td>{{ number_format($market->amount, 2, '.', ',') }} MRU</td>
-                        <td>{{ $market->authority_contracting }}</td>
-                        <td>{{ $market->passation_mode }}</td>
+                        <td>{{ $market->autoriteContractante->name }}</td>
+                        <td>{{ $market->modePassation->name }}</td>
                         <td>{{ $market->marketType->name }}</td>
                         <td>
                             {{-- Add dropdown for edit and delete actions --}}
