@@ -9,12 +9,10 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width=3rem;">Titre</th>
+                    <th style="width=3rem;">Objet</th>
                     <th>Année</th>
                     <th>Montant</th>
                     <th>Authorité contractante</th>
-                    <th>Mode de passation</th>
-                    <th>Type de marchés</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -25,8 +23,6 @@
                         <td>{{ $market->year }}</td>
                         <td>{{ number_format($market->amount, 2, '.', ',') }} MRU</td>
                         <td>{{ $market->autoriteContractante->name }}</td>
-                        <td>{{ $market->modePassation->name }}</td>
-                        <td>{{ $market->marketType->name }}</td>
                         <td>
                             {{-- Add dropdown for edit and delete actions --}}
                             <div class="dropdown">
@@ -34,6 +30,7 @@
                                     Actions
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="actionsDropdown">
+                                    <a class="dropdown-item" href="{{ route('markets.show', $market->id) }}">Détails</a>
                                     <a class="dropdown-item" href="{{ route('markets.edit', $market->id) }}">Editer</a>
                                     <form action="{{ route('markets.destroy', $market->id) }}" method="POST">
                                         @csrf

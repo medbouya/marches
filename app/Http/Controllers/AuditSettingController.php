@@ -133,6 +133,7 @@ class AuditSettingController extends Controller
             'year' => 'required|digits:4|integer',
             'minimum_amount_to_audit' => 'required|numeric',
             'threshold_exclusion' => 'required|numeric',
+            'audition_percentage' => 'required|numeric',
             'market_type_id' => 'required|array',
             'market_type_id.*' => 'exists:market_types,id',
             // Add other validation rules as needed
@@ -144,22 +145,47 @@ class AuditSettingController extends Controller
             'minimum_amount_to_audit.numeric' => 'The minimum amount to audit must be a numeric value.',
             'threshold_exclusion.required' => 'The exclusion amount to audit field is required.',
             'threshold_exclusion.numeric' => 'The exclusion amount to audit must be a numeric value.',
+            'audition_percentage.required' => 'The percentage of markets to audit field is required.',
+            'audition_percentage.numeric' => 'The percentage of markets to audit must be a numeric value.',
             'market_type_id.required' => 'Please select at least one market type.',
             'market_type_id.*.exists' => 'Invalid market type selected.',
             // Add other custom error messages as needed
         ]);
+
+        // Add custom validation rule: threshold_exclusion should be less than minimum_amount_to_audit
+        $validator->after(function ($validator) use ($request) {
+            if ($request->input('threshold_exclusion') >= $request->input('minimum_amount_to_audit')) {
+                $validator->errors()->add('threshold_exclusion', 'Le seuil d\'exclusion d\'audition doit être inférieur au seuil d\'audition.');
+            }
+        });
 
         // If validation fails, redirect back with errors
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Retrieve existing AuditSetting entry if it exists; otherwise, create a new one
-        $auditSetting = AuditSetting::firstOrNew(['year' => $request->input('year')]);
+        // Find the first AuditSetting entry, regardless of the year
+        $auditSetting = AuditSetting::first();
 
-        // Update the fields of the AuditSetting instance
-        $auditSetting->minimum_amount_to_audit = $request->input('minimum_amount_to_audit');
-        // Update other fields as needed...
+        // If an entry exists, update all its attributes
+        if ($auditSetting) {
+            $auditSetting->update([
+                'year' => $request->input('year'), // Update the year if necessary
+                'minimum_amount_to_audit' => $request->input('minimum_amount_to_audit'),
+                'threshold_exclusion' => $request->input('threshold_exclusion'),
+                'audition_percentage' => $request->input('audition_percentage'),
+                // Add other fields here as needed...
+            ]);
+        } else {
+            // Otherwise, create a new AuditSetting entry with the provided attributes
+            $auditSetting = AuditSetting::create([
+                'year' => $request->input('year'),
+                'minimum_amount_to_audit' => $request->input('minimum_amount_to_audit'),
+                'threshold_exclusion' => $request->input('threshold_exclusion'),
+                'audition_percentage' => $request->input('audition_percentage'),
+                // Add other fields here as needed...
+            ]);
+        }
 
         // Retrieve percentages from user input
         $percentages = $request->input('percentages', []);
@@ -171,12 +197,9 @@ class AuditSettingController extends Controller
         if ($sumPercentages > 100) {
             return redirect()
                 ->back()
-                    ->withErrors(['percentages' => 'La somme de tous les pourcentages ne doit pas dépasser 100%'])
-                        ->withInput();
+                ->withErrors(['percentages' => 'La somme de tous les pourcentages ne doit pas dépasser 100 %'])
+                ->withInput();
         }
-
-        // Save the AuditSetting instance
-        $auditSetting->save();
 
         // Sync market types related to the AuditSetting
         $auditSetting->marketTypes()->sync($request->input('market_type_id'));
@@ -190,8 +213,6 @@ class AuditSettingController extends Controller
         // Redirect or do anything else after saving...
         return redirect()->route('audit-settings.index')->with('success', 'Paramètres d\'audit enregistrés avec succès.');
     }
-
-
 
     public function destroy(AuditSetting $auditSetting)
     {

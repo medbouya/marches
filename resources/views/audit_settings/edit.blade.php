@@ -4,6 +4,16 @@
     <div class="container">
         <h2>Mettre à jour les paramètres</h2>
 
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('audit-settings.storeOrUpdate') }}" method="POST">
             @csrf
             @method('POST')
@@ -21,6 +31,11 @@
             <div class="form-group">
                 <label for="threshold_exclusion">Seuil d'exclusion d'audition:</label>
                 <input type="text" name="threshold_exclusion" class="form-control" value="{{ $auditSetting->threshold_exclusion }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="audition_percentage">Pourcentage des marchés à auditionner:</label>
+                <input type="number" name="audition_percentage" class="form-control" value="{{ $auditSetting->audition_percentage }}" required>
             </div>
 
             <div class="form-group">

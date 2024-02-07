@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\AttributaireController;
 use App\Http\Controllers\AuditSettingController;
 use App\Http\Controllers\AutoriteContractanteController;
+use App\Http\Controllers\CPMPController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MarketController;
 use App\Http\Controllers\MarketTypeController;
 use App\Http\Controllers\ModePassationController;
+use App\Http\Controllers\SecteurController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +36,13 @@ Route::resource('markets', MarketController::class);
 Route::resource('mode-passations', ModePassationController::class);
 
 Route::resource('autorite-contractantes', AutoriteContractanteController::class);
+
+Route::resource('cpmps', CPMPController::class);
+
+Route::resource('secteurs', SecteurController::class);
+
+Route::resource('attributaires', AttributaireController::class);
+
 
 Auth::routes();
 

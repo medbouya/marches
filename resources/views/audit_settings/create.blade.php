@@ -33,6 +33,11 @@
             </div>
 
             <div class="form-group">
+                <label for="audition_percentage">Pourcentage de marchés à auditionner:</label>
+                <input type="text" name="audition_percentage" class="form-control" required>
+            </div>
+
+            <div class="form-group">
                 <label for="market_type_id">Type de marchés:</label>
                 <select name="market_type_id[]" class="form-control" required multiple>
                     {{-- Include options based on your market types --}}

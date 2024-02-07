@@ -119,6 +119,30 @@
                     </p>
                   </a>
                 </li>
+                <li class="nav-item">
+                  <a href="{{ route('cpmps.index') }}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                      CPMPs
+                    </p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('secteurs.index') }}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                      Secteurs
+                    </p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('attributaires.index') }}" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                      Attributaires
+                    </p>
+                  </a>
+                </li>
             </ul>
           </li>
           <li class="nav-item">

@@ -13,6 +13,7 @@ class AuditSetting extends Model
         'year',
         'minimum_amount_to_audit',
         'threshold_exclusion',
+        'audition_percentage',
         'market_type_id',
     ];
 

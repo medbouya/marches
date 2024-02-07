@@ -15,6 +15,7 @@
                     <th>Année</th>
                     <th>Seuil d'audition</th>
                     <th>Seuil d'exclusion</th>
+                    <th>A auditionner</th>
                     <th>Type de marchés</th>
                     <th>Modes de passation</th>
                 </tr>
@@ -39,6 +40,11 @@
                                 <span class="badge badge-danger">
                                     {{ number_format($auditSetting->threshold_exclusion, 2, '.', ',') }} MRU
                                 </span>
+                            </h3>
+                        </td>
+                        <td>
+                            <h3>
+                                <span class="badge badge-secondary">{{ $auditSetting->audition_percentage }} %</span>
                             </h3>
                         </td>
                         <td>

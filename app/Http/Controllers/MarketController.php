@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attributaire;
 use App\Models\AutoriteContractante;
+use App\Models\CPMP;
 use App\Models\Market;
 use App\Models\MarketType;
 use App\Models\ModePassation;
+use App\Models\Secteur;
 use Illuminate\Http\Request;
 
 class MarketController extends Controller
@@ -31,7 +34,10 @@ class MarketController extends Controller
         $marketTypes = MarketType::all(); // Fetch market types from the database
         $modePassations = ModePassation::all(); // Fetch mode passations
         $autoriteContractantes = AutoriteContractante::all(); // Fetch autorite contractantes
-        return view('markets.create', compact('marketTypes', 'modePassations', 'autoriteContractantes'));
+        $cpmps = CPMP::all();
+        $secteurs = Secteur::all();
+        $attributaires = Attributaire::all();
+        return view('markets.create', compact('marketTypes', 'modePassations', 'autoriteContractantes', 'cpmps', 'secteurs', 'attributaires'));
     }
 
     /**
@@ -47,8 +53,8 @@ class MarketController extends Controller
             'title' => 'required|string',
             'year' => 'required|digits:4|integer',
             'amount' => 'required|numeric',
-            'authority_contracting' => 'required|string',
-            'passation_mode' => 'required|string',
+            'passation_mode' => 'required|exists:mode_passations,id',
+            'authority_contracting' => 'required|exists:autorite_contractantes,id',
             'market_type_id' => 'required|exists:market_types,id', // Adjust the validation rule based on your needs
             // Add other validation rules as needed
         ]);
@@ -67,7 +73,7 @@ class MarketController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Market $market)
     {
         return view('markets.show', compact('market'));
     }
@@ -84,7 +90,12 @@ class MarketController extends Controller
         $marketTypes = MarketType::all();
         $modePassations = ModePassation::all(); // Fetch mode passations
         $autoriteContractantes = AutoriteContractante::all(); // Fetch autorite contractantes
-        return view('markets.edit', compact('market', 'marketTypes', 'modePassations', 'autoriteContractantes'));
+        $cpmps = CPMP::all();
+        $secteurs = Secteur::all();
+        $attributaires = Attributaire::all();
+
+        return view('markets.edit', 
+            compact('market', 'marketTypes', 'modePassations', 'autoriteContractantes', 'cpmps', 'secteurs', 'attributaires'));
     }
 
     /**
