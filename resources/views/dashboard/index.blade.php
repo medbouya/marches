@@ -13,7 +13,7 @@
             @forelse ($marketTypes as $marketType)
                 <li><i>{{ $marketType->name }}</i></li>
             @empty
-                <li>Pas de type de marchés spécifié dans les paramètres.</li>
+                <li>Pas de type de marchés spécifiés dans les paramètres.</li>
             @endforelse
         </ul>
 
@@ -33,7 +33,7 @@
                     </tbody>
                 </table>
             @empty
-                <li>Pas de marchés entrant les critères des paramètres.</li>
+                <li>Pas de marchés entrant dans les critères des paramètres.</li>
             @endforelse
         </ul>
     </div>
