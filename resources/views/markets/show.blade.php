@@ -13,6 +13,7 @@
             <li class="list-group-item"><i>Secteur</i> : <b>{{ $market->secteur->name }}</b></li>
             <li class="list-group-item"><i>Montant</i> : <b>{{ number_format($market->amount, 2, '.', ',') }} MRU</b></li>
             <li class="list-group-item"><i>Attributaire</i> : <b>{{ $market->attributaire->name }}</b></li>
+            <li class="list-group-item"><i>Attributaire</i> : <b>{{ $market->delai_execution }} jours</b></li>
         </ul>
         <a href="{{ route('markets.index') }}" class="btn btn-primary mt-3">Retour</a>
     </div>
