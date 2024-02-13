@@ -20,17 +20,30 @@
                         <td>{{ $cpmp->name }}</td>
                         <td>{{ $cpmp->description }}</td>
                         <td>
-                            <a href="{{ route('cpmps.show', $cpmp->id) }}" class="btn btn-info btn-sm">Voir</a>
-                            <a href="{{ route('cpmps.edit', $cpmp->id) }}" class="btn btn-primary btn-sm">Editer</a>
-                            <form action="{{ route('cpmps.destroy', $cpmp->id) }}" method="POST" style="display: inline;">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ $cpmp->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Actions
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $cpmp->id }}">
+                                    <a class="dropdown-item" href="{{ route('cpmps.show', $cpmp->id) }}">Voir</a>
+                                    <a class="dropdown-item" href="{{ route('cpmps.edit', $cpmp->id) }}">Editer</a>
+                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('delete-form-{{ $cpmp->id }}').submit();">
+                                        Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                            <form id="delete-form-{{ $cpmp->id }}" action="{{ route('cpmps.destroy', $cpmp->id) }}" method="POST" style="display: none;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+        <!-- Pagination Links -->
+        <div class="mt-3">
+            {{ $cpmps->links() }}
+        </div>
     </div>
 @endsection

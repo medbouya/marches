@@ -33,4 +33,8 @@
             @endforeach
         </tbody>
     </table>
+    <!-- Pagination Links -->
+    <div class="mt-3">
+        {{ $autoriteContractantes->links() }}
+    </div>
 @endsection

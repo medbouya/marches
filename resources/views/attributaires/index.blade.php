@@ -32,5 +32,9 @@
                 @endforeach
             </tbody>
         </table>
+        <!-- Pagination Links -->
+        <div class="mt-3">
+            {{ $attributaires->links() }}
+        </div>
     </div>
 @endsection

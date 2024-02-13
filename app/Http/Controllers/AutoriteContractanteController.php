@@ -9,7 +9,7 @@ class AutoriteContractanteController extends Controller
 {
     public function index()
     {
-        $autoriteContractantes = AutoriteContractante::all();
+        $autoriteContractantes = AutoriteContractante::paginate(10);
         return view('autorite-contractantes.index', compact('autoriteContractantes'));
     }
 

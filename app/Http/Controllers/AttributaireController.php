@@ -9,7 +9,7 @@ class AttributaireController extends Controller
 {
     public function index()
     {
-        $attributaires = Attributaire::all();
+        $attributaires = Attributaire::paginate(10);
         return view('attributaires.index', compact('attributaires'));
     }
 

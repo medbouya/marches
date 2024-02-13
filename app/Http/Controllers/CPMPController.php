@@ -9,7 +9,7 @@ class CPMPController extends Controller
 {
     public function index()
     {
-        $cpmps = CPMP::all();
+        $cpmps = CPMP::paginate(10);
         return view('cpmps.index', compact('cpmps'));
     }
 

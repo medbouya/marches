@@ -33,4 +33,8 @@
             </tbody>
         </table>
     </div>
+    <!-- Pagination Links -->
+    <div class="mt-3">
+        {{ $secteurs->links() }}
+    </div>
 @endsection

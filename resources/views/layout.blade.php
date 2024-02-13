@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="{{ asset('css/all.min.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->

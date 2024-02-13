@@ -9,7 +9,7 @@ class SecteurController extends Controller
 {
     public function index()
     {
-        $secteurs = Secteur::all();
+        $secteurs = Secteur::paginate(10);
         return view('secteurs.index', compact('secteurs'));
     }
 

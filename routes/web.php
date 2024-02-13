@@ -6,6 +6,7 @@ use App\Http\Controllers\AutoriteContractanteController;
 use App\Http\Controllers\CPMPController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MarketController;
+use App\Http\Controllers\MarketImportController;
 use App\Http\Controllers\MarketTypeController;
 use App\Http\Controllers\ModePassationController;
 use App\Http\Controllers\SecteurController;
@@ -42,6 +43,9 @@ Route::resource('cpmps', CPMPController::class);
 Route::resource('secteurs', SecteurController::class);
 
 Route::resource('attributaires', AttributaireController::class);
+
+Route::get('/import/markets', [MarketImportController::class, 'importIndex']);
+Route::post('/import/markets', [MarketImportController::class, 'import']);
 
 
 Auth::routes();

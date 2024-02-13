@@ -48,5 +48,9 @@
                 @endforelse
             </tbody>
         </table>
+        <!-- Pagination Links -->
+        <div class="mt-3">
+            {{ $markets->links() }}
+        </div>
     </div>
 @endsection

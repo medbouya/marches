@@ -20,7 +20,7 @@ class MarketController extends Controller
      */
     public function index()
     {
-        $markets = Market::with('marketType', 'modePassation', 'autoriteContractante')->get();
+        $markets = Market::with('marketType', 'modePassation', 'autoriteContractante')->paginate(10);
         return view('markets.index', compact('markets'));
     }
 
