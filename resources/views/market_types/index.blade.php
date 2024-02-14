@@ -18,7 +18,7 @@
             @foreach ($marketTypes as $marketType)
                 <tr>
                     <td>{{ $marketType->id }}</td>
-                    <td>{{ $marketType->name }}</td>
+                    <td>{{ ucfirst($marketType->name) }}</td>
                     <td>
                         <a href="{{ route('market-types.edit', $marketType->id) }}" class="btn btn-sm btn-warning">Modifier</a>
                         <form action="{{ route('market-types.destroy', $marketType->id) }}" method="post" class="d-inline">

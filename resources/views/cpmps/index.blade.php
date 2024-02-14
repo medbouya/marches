@@ -17,7 +17,7 @@
                 @foreach ($cpmps as $cpmp)
                     <tr>
                         <td>{{ $cpmp->id }}</td>
-                        <td>{{ $cpmp->name }}</td>
+                        <td>{{ ucfirst($cpmp->name) }}</td>
                         <td>{{ $cpmp->description }}</td>
                         <td>
                             <div class="dropdown">

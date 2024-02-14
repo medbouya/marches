@@ -18,7 +18,7 @@
             @foreach ($autoriteContractantes as $autoriteContractante)
                 <tr>
                     <td>{{ $autoriteContractante->id }}</td>
-                    <td>{{ $autoriteContractante->name }}</td>
+                    <td>{{ ucfirst($autoriteContractante->name) }}</td>
                     <td>{{ $autoriteContractante->address }}</td>
                     <td>{{ $autoriteContractante->contact_person }}</td>
                     <td>

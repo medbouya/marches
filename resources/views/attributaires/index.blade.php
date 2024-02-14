@@ -17,7 +17,7 @@
                 @foreach ($attributaires as $attributaire)
                     <tr>
                         <td>{{ $attributaire->id }}</td>
-                        <td>{{ $attributaire->name }}</td>
+                        <td>{{ ucfirst($attributaire->name) }}</td>
                         <td>{{ $attributaire->description }}</td>
                         <td>
                             <a href="{{ route('attributaires.show', $attributaire->id) }}" class="btn btn-info btn-sm">Voir</a>

@@ -19,10 +19,10 @@
             <tbody>
                 @forelse ($markets as $market)
                     <tr>
-                        <td>{{ $market->title }}</td>
+                        <td>{{ ucfirst($market->title) }}</td>
                         <td>{{ $market->year }}</td>
                         <td>{{ number_format($market->amount, 2, '.', ',') }} MRU</td>
-                        <td>{{ $market->autoriteContractante->name }}</td>
+                        <td>{{ ucfirst($market->autoriteContractante->name) }}</td>
                         <td>
                             {{-- Add dropdown for edit and delete actions --}}
                             <div class="dropdown">
