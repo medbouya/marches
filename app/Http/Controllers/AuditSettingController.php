@@ -193,14 +193,6 @@ class AuditSettingController extends Controller
         // Calculate the sum of all percentages
         $sumPercentages = array_sum($percentages);
 
-        // Check if the sum of all percentages exceeds 100
-        if ($sumPercentages > 100) {
-            return redirect()
-                ->back()
-                ->withErrors(['percentages' => 'La somme de tous les pourcentages ne doit pas dépasser 100 %'])
-                ->withInput();
-        }
-
         // Sync market types related to the AuditSetting
         $auditSetting->marketTypes()->sync($request->input('market_type_id'));
 
