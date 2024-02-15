@@ -202,7 +202,13 @@ class MarketController extends Controller
     
                 public function collection()
                 {
-                    $this->data->load(['modePassation', 'attributaire']);
+                    $this->data->load(['modePassation', 
+                                        'attributaire',
+                                        'marketType',
+                                        'secteur',
+                                        'cpmp',
+                                        'autoriteContractante'
+                                    ]);
 
                     // Transform the data to include related model names instead of IDs
                     $transformed = $this->data->map(function ($item) {
