@@ -218,7 +218,7 @@ class MarketController extends Controller
                             'Objet' => $item->title,
                             'CPMP' => strtoupper($item->CPMP->name) ?? 'N/A',
                             'Autorité contractante' => strtoupper($item->autoriteContractante->name) ?? 'N/A',
-                            'Type de marché' => strtoupper($item->marketType->name) ?? 'N/A',
+                            //'Type de marché' => strtoupper($item->marketType->name) ?? 'N/A',
                             'Mode de Passation' => strtoupper($item->modePassation->name) ?? 'N/A',
                             'Secteur' => strtoupper($item->secteur->name) ?? 'N/A',
                             'Montant' => $item->amount,
