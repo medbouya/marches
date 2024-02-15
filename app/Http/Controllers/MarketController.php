@@ -238,7 +238,7 @@ class MarketController extends Controller
                 public function headings(): array
                 {
                     return ["Numéro", "Année", "Objet", "CPMP", "Autorité contractante",
-                            "Type de marché", "Mode de passation", "Secteur",
+                            "Mode de passation", "Secteur",
                             "Montant", "Financement", "Attributaire",
                             "Date de signature", "Date de notification",
                             "Date de publication", "Délai d'exécution"];
