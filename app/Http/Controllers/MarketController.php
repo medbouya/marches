@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attributaire;
+use App\Models\AuditSetting;
 use App\Models\AutoriteContractante;
 use App\Models\CPMP;
 use App\Models\Market;
 use App\Models\MarketType;
 use App\Models\ModePassation;
 use App\Models\Secteur;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MarketController extends Controller
 {
@@ -144,5 +149,123 @@ class MarketController extends Controller
         // Redirect or do anything else after deleting...
 
         return redirect()->route('markets.index')->with('success', 'Marché supprimé avec succès.');
+    }
+
+    public function getFilteredMarkets($exportType = null)
+    {
+        $auditSetting = AuditSetting::firstOrFail();
+        $minimumAmount = $auditSetting->minimum_amount_to_audit;
+        $thresholdExclusion = $auditSetting->threshold_exclusion;
+
+        // Assuming $eligibleModePassationIds logic needs to be revised for clarity and correct functionality
+        $eligibleModePassationIds = ModePassation::get()->flatMap(function ($modePassation) use ($minimumAmount, $thresholdExclusion) {
+            // Calculate the number of markets to include for each ModePassation
+            $marketsCount = Market::where('passation_mode', $modePassation->id)
+                                ->where('amount', '>', $thresholdExclusion)
+                                ->where('amount', '<', $minimumAmount)
+                                ->count();
+            $percentage = $modePassation->percentage ?? 100;
+            $eligibleCount = ceil($marketsCount * ($percentage / 100.0));
+
+            // Return the mode_passation_id for the eligible number of markets
+            return Market::where('passation_mode', $modePassation->id)
+                        ->where('amount', '>', $thresholdExclusion)
+                        ->where('amount', '<', $minimumAmount)
+                        ->select('id') // Just fetch the IDs to minimize data fetched
+                        ->take($eligibleCount) // Take only as many as eligible
+                        ->pluck('id'); // Return only IDs to avoid fetching full models
+        });
+
+        // Fetch markets directly eligible above the minimum amount
+        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->pluck('id');
+
+        // Combine IDs for fetching
+        $allMarketIds = $marketsAboveMinimum->merge($eligibleModePassationIds)->unique();
+
+        // Fetch paginated markets using the combined IDs
+        $filteredMarkets = Market::whereIn('id', $allMarketIds)
+                                            ->orderBy('amount', 'desc')
+                                            ->paginate(10);
+
+        // Excel export
+        if ($exportType === 'excel') {
+            $filteredMarkets = Market::whereIn('id', $allMarketIds)
+                                            ->orderBy('amount', 'desc')
+                                            ->get();
+            return Excel::download(new class($filteredMarkets) implements FromCollection, WithHeadings {
+                private $data;
+    
+                public function __construct($data)
+                {
+                    $this->data = $data;
+                }
+    
+                public function collection()
+                {
+                    $this->data->load(['modePassation', 'attributaire']);
+
+                    // Transform the data to include related model names instead of IDs
+                    $transformed = $this->data->map(function ($item) {
+                        return [
+                            'Numéro' => $item->numero,
+                            'Année' => $item->year,
+                            'Objet' => $item->title,
+                            'CPMP' => strtoupper($item->CPMP->name) ?? 'N/A',
+                            'Autorité contractante' => strtoupper($item->autoriteContractante->name) ?? 'N/A',
+                            'Type de marché' => strtoupper($item->marketType->name) ?? 'N/A',
+                            'Mode de Passation' => strtoupper($item->modePassation->name) ?? 'N/A',
+                            'Secteur' => strtoupper($item->secteur->name) ?? 'N/A',
+                            'Montant' => $item->amount,
+                            'Financement' => $item->financement ?? 'N/A',
+                            'Attributaire' => strtoupper($item->attributaire->name) ?? 'N/A',
+                            'Date de signature' => $item->date_signature,
+                            'Date de notification' => $item->date_notification,
+                            'Date de publication' => $item->date_publication,
+                            'Délai d\'exécution' => $item->delai_execution,
+
+                        ];
+                    });
+
+                    return $transformed;
+                }
+    
+                public function headings(): array
+                {
+                    return ["Numéro", "Année", "Objet", "CPMP", "Autorité contractante",
+                            "Type de marché", "Mode de passation", "Secteur",
+                            "Montant", "Financement", "Attributaire",
+                            "Date de signature", "Date de notification",
+                            "Date de publication", "Délai d'exécution"];
+                }
+            }, 'markets.xlsx');
+        }
+
+        // PDF export
+        if ($exportType === 'pdf') {
+            $filteredMarkets = Market::whereIn('id', $allMarketIds)
+                                     ->orderBy('amount', 'desc')
+                                     ->get(); // Get all, not paginated
+        
+            $pdf = PDF::loadView('markets.pdf', compact('filteredMarkets'));
+            return $pdf->download('markets.pdf');
+        }
+
+        $filteredMarketsWithRelations = Market::whereIn('id', $allMarketIds)
+                                           ->with(['modePassation', 'attributaire']) // Adjust based on needed relations
+                                           ->orderBy('amount', 'desc')
+                                           ->get();
+
+        // Calculate statistics based on $filteredMarketsWithRelations
+        $marketsAboveMinimumCount = $filteredMarketsWithRelations->where('amount', '>=', $minimumAmount)->count();
+        
+        // Calculate the number of markets for each ModePassation within the filtered results
+        $modePassationCounts = $filteredMarketsWithRelations->groupBy('modePassation.name')
+                                                            ->map(function ($group) {
+                                                                return count($group);
+                                                            });
+
+        return view('markets.marketsToAudit', compact('filteredMarkets', 
+                                                        'marketsAboveMinimumCount', 
+                                                        'modePassationCounts'));
     }
 }

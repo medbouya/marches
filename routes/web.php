@@ -32,6 +32,7 @@ Route::resource('audit-settings', AuditSettingController::class);
 
 Route::post('/audit-settings', [AuditSettingController::class, 'storeOrUpdate'])->name('audit-settings.storeOrUpdate');
 
+Route::get('/markets/to_audit/{exportType?}', [MarketController::class, 'getFilteredMarkets'])->name('markets.toAudit');
 Route::resource('markets', MarketController::class);
 
 Route::resource('mode-passations', ModePassationController::class);
