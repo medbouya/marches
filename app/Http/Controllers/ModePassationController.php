@@ -13,6 +13,11 @@ class ModePassationController extends Controller
         return view('mode-passations.index', compact('modePassations'));
     }
 
+    public function show(ModePassation $modePassation)
+    {
+        return view('mode-passations.show', compact('modePassation'));
+    }
+
     public function create()
     {
         return view('mode-passations.create');
@@ -52,5 +57,16 @@ class ModePassationController extends Controller
         $modePassation->delete();
 
         return redirect()->route('mode-passations.index')->with('success', 'Mode de passation supprimé avec succès.');
+    }
+
+    // Function updating the ModePassation object rank
+    public function updateRank(Request $request)
+    {
+        $ranks = $request->input('ranks', []);
+        foreach ($ranks as $rank => $id) {
+            ModePassation::where('id', $id)->update(['rank' => $rank]);
+        }
+
+        return redirect()->route('mode-passations.index')->with('success', 'Rang mis à jour.');
     }
 }

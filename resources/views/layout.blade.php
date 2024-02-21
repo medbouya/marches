@@ -14,6 +14,9 @@
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
+  <!-- Additional styles -->
+  @yield('styles')
+
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
@@ -44,7 +47,41 @@
           </form>
         </div>
       </li>
+      <!-- User menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
+          {{ Auth::user()->name }}
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
+          <span class="dropdown-item dropdown-header">Menu utilisateur</span>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-user mr-2"></i> Profil
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="{{ route('password.update') }}" class="dropdown-item">
+            <i class="fas fa-key mr-2"></i> Mot de passe
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-cogs mr-2"></i> Paramètres
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> Utilisateurs
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item dropdown-footer" href="{{ route('logout') }}"
+              onclick="event.preventDefault();
+                            document.getElementById('logout-form').submit();">
+              <i class="fa fa-sign-out-alt mr-2"></i> Déconnexion
+          </a>
 
+          <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+              @csrf
+          </form>
+        </div>
+      </li>
       <li class="nav-item">
         <a class="nav-link" data-widget="fullscreen" href="#" role="button">
           <i class="fas fa-expand-arrows-alt"></i>
@@ -90,7 +127,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ route('markets.toAudit') }}" class="nav-link">
+            <a href="{{ route('markets.toAuditSummary') }}" class="nav-link">
               <i class="nav-icon fas fa-stream"></i>
               <p>
                 Marchés à auditer

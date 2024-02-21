@@ -151,6 +151,56 @@ class MarketController extends Controller
         return redirect()->route('markets.index')->with('success', 'Marché supprimé avec succès.');
     }
 
+    public function marketsToAuditSummary()
+    {
+        $auditSetting = AuditSetting::firstOrFail();
+        $minimumAmount = $auditSetting->minimum_amount_to_audit;
+        $thresholdExclusion = $auditSetting->threshold_exclusion;
+
+        // Assuming $eligibleModePassationIds logic needs to be revised for clarity and correct functionality
+        $eligibleModePassationIds = ModePassation::get()->flatMap(function ($modePassation) use ($minimumAmount, $thresholdExclusion) {
+            // Calculate the number of markets to include for each ModePassation
+            $marketsCount = Market::where('passation_mode', $modePassation->id)
+                                ->where('amount', '>', $thresholdExclusion)
+                                ->where('amount', '<', $minimumAmount)
+                                ->count();
+            $percentage = $modePassation->percentage ?? 100;
+            $eligibleCount = ceil($marketsCount * ($percentage / 100.0));
+
+            // Return the mode_passation_id for the eligible number of markets
+            return Market::where('passation_mode', $modePassation->id)
+                        ->where('amount', '>', $thresholdExclusion)
+                        ->where('amount', '<', $minimumAmount)
+                        ->select('id') // Just fetch the IDs to minimize data fetched
+                        ->take($eligibleCount) // Take only as many as eligible
+                        ->pluck('id'); // Return only IDs to avoid fetching full models
+        });
+
+        // Fetch markets directly eligible above the minimum amount
+        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->pluck('id');
+
+        // Combine IDs for fetching
+        $allMarketIds = $marketsAboveMinimum->merge($eligibleModePassationIds)->unique();
+
+
+        $filteredMarketsWithRelations = Market::whereIn('id', $allMarketIds)
+                                           ->with(['modePassation', 'attributaire']) // Adjust based on needed relations
+                                           ->orderBy('amount', 'desc')
+                                           ->get();
+
+        // Calculate statistics based on $filteredMarketsWithRelations
+        $marketsAboveMinimumCount = $filteredMarketsWithRelations->where('amount', '>=', $minimumAmount)->count();
+        
+        // Calculate the number of markets for each ModePassation within the filtered results
+        $modePassationCounts = $filteredMarketsWithRelations->groupBy('modePassation.name')
+                                                            ->map(function ($group) {
+                                                                return count($group);
+                                                            });
+
+        return view('markets.marketsToAuditSummary', compact('marketsAboveMinimumCount',
+                                                        'modePassationCounts'));
+    }
+
     public function getFilteredMarkets($exportType = null)
     {
         $auditSetting = AuditSetting::firstOrFail();

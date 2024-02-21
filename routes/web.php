@@ -24,31 +24,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-Route::resource('market-types', MarketTypeController::class);
-
-Route::resource('audit-settings', AuditSettingController::class);
-
-Route::post('/audit-settings', [AuditSettingController::class, 'storeOrUpdate'])->name('audit-settings.storeOrUpdate');
-
-Route::get('/markets/to_audit/{exportType?}', [MarketController::class, 'getFilteredMarkets'])->name('markets.toAudit');
-Route::resource('markets', MarketController::class);
-
-Route::resource('mode-passations', ModePassationController::class);
-
-Route::resource('autorite-contractantes', AutoriteContractanteController::class);
-
-Route::resource('cpmps', CPMPController::class);
-
-Route::resource('secteurs', SecteurController::class);
-
-Route::resource('attributaires', AttributaireController::class);
-
-Route::get('/import/markets', [MarketImportController::class, 'importIndex']);
-Route::post('/import/markets', [MarketImportController::class, 'import']);
-
-
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('market-types', MarketTypeController::class);
+
+    Route::resource('audit-settings', AuditSettingController::class);
+
+    Route::post('/audit-settings', [AuditSettingController::class, 'storeOrUpdate'])->name('audit-settings.storeOrUpdate');
+
+    Route::get('/markets/to_audit/summary', [MarketController::class, 'marketsToAuditSummary'])->name('markets.toAuditSummary');
+    Route::get('/markets/to_audit/{exportType?}', [MarketController::class, 'getFilteredMarkets'])->name('markets.toAudit');
+    Route::resource('markets', MarketController::class);
+
+    Route::post('/mode-passations/update-rank', [ModePassationController::class, 'updateRank'])->name('mode-passations.updateRank');
+    Route::resource('mode-passations', ModePassationController::class);
+
+    Route::resource('autorite-contractantes', AutoriteContractanteController::class);
+
+    Route::resource('cpmps', CPMPController::class);
+
+    Route::resource('secteurs', SecteurController::class);
+
+    Route::resource('attributaires', AttributaireController::class);
+
+    Route::get('/import/markets', [MarketImportController::class, 'importIndex']);
+    Route::post('/import/markets', [MarketImportController::class, 'import']);
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
