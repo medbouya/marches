@@ -29,7 +29,7 @@
                 </tr>
             </thead>
             <tbody id="sortable">
-                @foreach ($modePassations as $modePassation)
+                @foreach ($modePassations as $index => $modePassation)
                     <tr data-id="{{ $modePassation->id }}">
                         <td class="drag-handle">≡</td> 
                         <td>{{ $modePassation->id }}</td>
@@ -42,7 +42,7 @@
                                     Supprimer
                             </button>
                         </td>
-                        <input type="hidden" name="ranks[]" value="{{ $modePassation->id }}">
+                        <input type="hidden" name="ranks[{{ $modePassation->id }}]" value="{{ $index + 1 }}">
                     </tr>
                 @endforeach
             </tbody>
@@ -82,9 +82,13 @@
 
                 // Update the hidden inputs based on the new order
                 order.forEach(function(id, index) {
-                    // Assuming the hidden input's value should now reflect the new rank
-                    $('tr[data-id="' + id + '"]').find('input[type="hidden"]').val(index);
+                    // Ensure the rank starts at 1 by adding 1 to the index
+                    $('tr[data-id="' + id + '"]').find('input[type="hidden"]').val(index + 1);
                 });
+
+                console.log("Final ranks: ", order.map(function(id, index) {
+                    return {id: id, rank: index + 1};
+                }));
             }
         },
         // Element dragging ended

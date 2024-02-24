@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ModePassation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ModePassationController extends Controller
 {
@@ -63,7 +64,7 @@ class ModePassationController extends Controller
     public function updateRank(Request $request)
     {
         $ranks = $request->input('ranks', []);
-        foreach ($ranks as $rank => $id) {
+        foreach ($ranks as $id => $rank) {
             ModePassation::where('id', $id)->update(['rank' => $rank]);
         }
 
