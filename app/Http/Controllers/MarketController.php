@@ -228,8 +228,6 @@ class MarketController extends Controller
                 $count1++;
         }
         
-        \Log::info('Number of Avenants markets 1: ' . $count1);
-
         foreach ($modePassations as $modePassation) {
             $eligibleMarkets = Market::where('passation_mode', $modePassation->id)
                                      ->whereBetween('amount', [$thresholdExclusion, $minimumAmount])
@@ -257,8 +255,6 @@ class MarketController extends Controller
                 $count1++;
         }
         
-        \Log::info('Number of Avenants markets 2: ' . $count2);
-
         // Step 1: Fetch all eligible markets not included in the $marketsToAudit
         $eligibleMarketIdsNotSelected = Market::whereBetween('amount', [$thresholdExclusion, $minimumAmount])
                                                 ->whereNotIn('id', $marketsToAudit->pluck('id'))
@@ -285,8 +281,6 @@ class MarketController extends Controller
             if ($market->modePassation->id == 2)
                 $count++;
         }
-
-        \Log::info('Number of Avenants markets 3: ' . $count);
 
         $allMarketIds = $marketsToAudit->pluck('id')->toArray();
 

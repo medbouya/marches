@@ -23,7 +23,12 @@
 <div class="wrapper">
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-
+    <div class="row justify-content-center ml-auto">
+      <img src="{{ asset('img/entete_marches_1.png') }}" 
+              class="img-center img-fluid m-2" 
+              style="width: 25rem;"
+              alt="Entête de page" />
+    </div>
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->

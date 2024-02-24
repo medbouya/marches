@@ -3,9 +3,9 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <img src="{{ asset('img/entete_marches.png') }}" 
-                class="img-center img-fluid" 
-                style="width: 20rem;"
+        <img src="{{ asset('img/entete_marches_1.png') }}" 
+                class="img-center img-fluid m-2" 
+                style="width: 50rem;"
                 alt="Entête de page" />
     </div>
     <div class="row justify-content-center">
