@@ -60,20 +60,16 @@
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
           <span class="dropdown-item dropdown-header">Menu utilisateur</span>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-user mr-2"></i> Profil
+          <a href="{{ route('users.index') }}" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> Utilisateurs
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="{{ route('roles.index') }}" class="dropdown-item">
+            <i class="fas fa-layer-group mr-2"></i> Groupes
           </a>
           <div class="dropdown-divider"></div>
           <a href="{{ route('password.update') }}" class="dropdown-item">
             <i class="fas fa-key mr-2"></i> Mot de passe
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-cogs mr-2"></i> Paramètres
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> Utilisateurs
           </a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item dropdown-footer" href="{{ route('logout') }}"
@@ -266,7 +262,7 @@
         use Carbon\Carbon;
         $currentYear = Carbon::now()->year;
     @endphp
-    <strong>Copyright &copy; {{ $currentYear }}. All rights reserved.
+    <strong>Copyright &copy; {{ $currentYear }}. Tous droits réservés.
   </footer>
 </div>
 <!-- ./wrapper -->

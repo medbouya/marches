@@ -10,6 +10,8 @@ use App\Http\Controllers\MarketImportController;
 use App\Http\Controllers\MarketTypeController;
 use App\Http\Controllers\ModePassationController;
 use App\Http\Controllers\SecteurController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -53,4 +55,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/import/markets', [MarketImportController::class, 'importIndex']);
     Route::post('/import/markets', [MarketImportController::class, 'import']);
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    // Users
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post(
+        '/users/{user}/assign-role',
+        [UserController::class, 'assignRole']
+    )->name('users.assignRole');
+    Route::get(
+        '/custom-register',
+        [UserController::class, 'showRegistrationForm']
+    )->name('users.register');
+    Route::post(
+        '/custom-register',
+        [UserController::class, 'customRegister']
+    )->name('users.register.store');
+
+    // Roles
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{role}', [RoleController::class, 'show'])->name('roles.show');
+    Route::put(
+        '/roles/{role}/permissions',
+        [RoleController::class, 'updatePermissions']
+    )->name('roles.updatePermissions');
+
 });

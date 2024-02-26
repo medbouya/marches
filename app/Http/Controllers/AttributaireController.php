@@ -7,6 +7,16 @@ use Illuminate\Http\Request;
 
 class AttributaireController extends Controller
 {
+    public function __construct()
+    {
+        // Permissions
+        $this->middleware('permission:afficher un attributaire', ['only' => ['show']]);
+        $this->middleware('permission:lister les attributaires', ['only' => ['index']]);
+        $this->middleware('permission:ajouter un attributaire', ['only' => ['create', 'store']]);
+        $this->middleware('permission:modifier un attributaire', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:supprimer un attributaire', ['only' => ['destroy']]);
+    }
+
     public function index()
     {
         $attributaires = Attributaire::paginate(10);

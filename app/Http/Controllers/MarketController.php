@@ -27,7 +27,11 @@ class MarketController extends Controller
      */
     public function index()
     {
-        $markets = Market::with('marketType', 'modePassation', 'autoriteContractante')->paginate(10);
+        $markets = Market::with(
+            'marketType',
+            'modePassation',
+            'autoriteContractante'
+        )->paginate(10);
         return view('markets.index', compact('markets'));
     }
 
@@ -38,13 +42,20 @@ class MarketController extends Controller
      */
     public function create()
     {
-        $marketTypes = MarketType::all(); // Fetch market types from the database
-        $modePassations = ModePassation::all(); // Fetch mode passations
-        $autoriteContractantes = AutoriteContractante::all(); // Fetch autorite contractantes
+        $marketTypes = MarketType::all();
+        $modePassations = ModePassation::all();
+        $autoriteContractantes = AutoriteContractante::all();
         $cpmps = CPMP::all();
         $secteurs = Secteur::all();
         $attributaires = Attributaire::all();
-        return view('markets.create', compact('marketTypes', 'modePassations', 'autoriteContractantes', 'cpmps', 'secteurs', 'attributaires'));
+        return view('markets.create', compact(
+            'marketTypes',
+            'modePassations',
+            'autoriteContractantes',
+            'cpmps',
+            'secteurs',
+            'attributaires'
+        ));
     }
 
     /**
@@ -62,16 +73,15 @@ class MarketController extends Controller
             'amount' => 'required|numeric',
             'passation_mode' => 'required|exists:mode_passations,id',
             'authority_contracting' => 'required|exists:autorite_contractantes,id',
-            'market_type_id' => 'required|exists:market_types,id', // Adjust the validation rule based on your needs
-            // Add other validation rules as needed
+            'market_type_id' => 'required|exists:market_types,id',
         ]);
 
-        // Create a new market
         Market::create($request->all());
 
-        // Redirect or do anything else after saving...
-
-        return redirect()->route('markets.index')->with('success', 'Marché ajouté avec succès.');
+        return redirect()->route('markets.index')->with(
+            'success',
+            'Marché ajouté avec succès.'
+        );
     }
 
     /**
@@ -95,14 +105,24 @@ class MarketController extends Controller
     {
         $market = Market::findOrFail($id);
         $marketTypes = MarketType::all();
-        $modePassations = ModePassation::all(); // Fetch mode passations
-        $autoriteContractantes = AutoriteContractante::all(); // Fetch autorite contractantes
+        $modePassations = ModePassation::all();
+        $autoriteContractantes = AutoriteContractante::all();
         $cpmps = CPMP::all();
         $secteurs = Secteur::all();
         $attributaires = Attributaire::all();
 
-        return view('markets.edit', 
-            compact('market', 'marketTypes', 'modePassations', 'autoriteContractantes', 'cpmps', 'secteurs', 'attributaires'));
+        return view(
+            'markets.edit',
+            compact(
+                'market',
+                'marketTypes',
+                'modePassations',
+                'autoriteContractantes',
+                'cpmps',
+                'secteurs',
+                'attributaires'
+            )
+        );
     }
 
     /**
@@ -122,7 +142,7 @@ class MarketController extends Controller
             'amount' => 'required|numeric',
             'authority_contracting' => 'required|string',
             'passation_mode' => 'required|string',
-            'market_type_id' => 'required|exists:market_types,id', // Adjust the validation rule based on your needs
+            'market_type_id' => 'required|exists:market_types,id',
             'passation_mode' => 'required|exists:mode_passations,id',
             'authority_contracting' => 'required|exists:autorite_contractantes,id',
             // Add other validation rules as needed
@@ -133,7 +153,10 @@ class MarketController extends Controller
 
         // Redirect or do anything else after updating...
 
-        return redirect()->route('markets.index')->with('success', 'Marché mis à jour avec succès.');
+        return redirect()->route('markets.index')->with(
+            'success',
+            'Marché mis à jour avec succès.'
+        );
     }
 
     /**
@@ -150,7 +173,10 @@ class MarketController extends Controller
 
         // Redirect or do anything else after deleting...
 
-        return redirect()->route('markets.index')->with('success', 'Marché supprimé avec succès.');
+        return redirect()->route('markets.index')->with(
+            'success',
+            'Marché supprimé avec succès.'
+        );
     }
 
     public function marketsToAuditSummary()
@@ -158,49 +184,55 @@ class MarketController extends Controller
         $auditSetting = AuditSetting::firstOrFail();
         $minimumAmount = $auditSetting->minimum_amount_to_audit;
         $thresholdExclusion = $auditSetting->threshold_exclusion;
+        $auditionPercentage = $auditSetting->audition_percentage;
 
-        // Assuming $eligibleModePassationIds logic needs to be revised for clarity and correct functionality
-        $eligibleModePassationIds = ModePassation::get()->flatMap(function ($modePassation) use ($minimumAmount, $thresholdExclusion) {
-            // Calculate the number of markets to include for each ModePassation
-            $marketsCount = Market::where('passation_mode', $modePassation->id)
-                                ->where('amount', '>', $thresholdExclusion)
-                                ->where('amount', '<', $minimumAmount)
-                                ->count();
-            $percentage = $modePassation->percentage ?? 100;
-            $eligibleCount = ceil($marketsCount * ($percentage / 100.0));
+        $totalMarketsCount = Market::all()->count();
+        $maxMarketsToAudit = ceil($totalMarketsCount * ($auditionPercentage / 100.0));
 
-            // Return the mode_passation_id for the eligible number of markets
-            return Market::where('passation_mode', $modePassation->id)
-                        ->where('amount', '>', $thresholdExclusion)
-                        ->where('amount', '<', $minimumAmount)
-                        ->select('id') // Just fetch the IDs to minimize data fetched
-                        ->take($eligibleCount) // Take only as many as eligible
-                        ->pluck('id'); // Return only IDs to avoid fetching full models
-        });
+        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->get();
 
-        // Fetch markets directly eligible above the minimum amount
-        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->pluck('id');
+        $modePassations = ModePassation::orderBy('rank')->get();
+        $selectedMarkets = collect([]);
 
-        // Combine IDs for fetching
-        $allMarketIds = $marketsAboveMinimum->merge($eligibleModePassationIds)->unique();
+        foreach ($modePassations as $modePassation) {
+            // Fetch markets eligible under each mode of passation within the specified amount range.
+            $eligibleMarkets = Market::where('passation_mode', $modePassation->id)
+                ->whereBetween('amount', [$thresholdExclusion, $minimumAmount])
+                ->get();
 
+            $percentageToSelect = $modePassation->percentage / 100;
+            $countToSelect = ceil($eligibleMarkets->count() * $percentageToSelect);
 
-        $filteredMarketsWithRelations = Market::whereIn('id', $allMarketIds)
-                                           ->with(['modePassation', 'attributaire']) // Adjust based on needed relations
-                                           ->orderBy('amount', 'desc')
-                                           ->get();
+            if ($countToSelect > 0) {
+                $selectedMarkets = $selectedMarkets->merge($eligibleMarkets->random(min($countToSelect, $eligibleMarkets->count())));
+            }
+        }
 
-        // Calculate statistics based on $filteredMarketsWithRelations
-        $marketsAboveMinimumCount = $filteredMarketsWithRelations->where('amount', '>=', $minimumAmount)->count();
-        
+        $spaceLeftForRandomSelection = $maxMarketsToAudit - $marketsAboveMinimum->count();
+
+        if ($selectedMarkets->count() > $spaceLeftForRandomSelection) {
+            $selectedMarkets = $selectedMarkets->random($spaceLeftForRandomSelection);
+        }
+
+        // Now merge the adjusted selectedMarkets with marketsAboveMinimum.
+        $marketsToAudit = $selectedMarkets->merge($marketsAboveMinimum)->unique('id');
+
+        $marketsAboveMinimumCount = $marketsToAudit->where(
+            'amount',
+            '>=',
+            $minimumAmount
+        )->count();
+
         // Calculate the number of markets for each ModePassation within the filtered results
-        $modePassationCounts = $filteredMarketsWithRelations->groupBy('modePassation.name')
+        $modePassationCounts = $marketsToAudit->groupBy('modePassation.name')
                                                             ->map(function ($group) {
                                                                 return count($group);
                                                             });
 
-        return view('markets.marketsToAuditSummary', compact('marketsAboveMinimumCount',
-                                                        'modePassationCounts'));
+        return view('markets.marketsToAuditSummary', compact(
+            'marketsAboveMinimumCount',
+            'modePassationCounts'
+        ));
     }
 
     public function getFilteredMarkets($exportType = null)
@@ -213,68 +245,52 @@ class MarketController extends Controller
         $totalMarketsCount = Market::all()->count();
         $maxMarketsToAudit = ceil($totalMarketsCount * ($auditionPercentage / 100.0));
 
-        // Step 1: Select all markets above the minimum amount
         $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->get();
 
-        // Initialize collection for markets to be audited
-        $marketsToAudit = collect($marketsAboveMinimum);
-
-        // Step 2: Process markets between thresholdExclusion and minimumAmount by ModePassation rank
         $modePassations = ModePassation::orderBy('rank')->get();
+        $selectedMarkets = collect([]);
 
-        $count1 = 0;
-        foreach($marketsToAudit as $market) {
-            if ($market->modePassation->id == 2)
-                $count1++;
-        }
-        
         foreach ($modePassations as $modePassation) {
+            // Fetch markets eligible under each mode of passation within the specified amount range.
             $eligibleMarkets = Market::where('passation_mode', $modePassation->id)
-                                     ->whereBetween('amount', [$thresholdExclusion, $minimumAmount])
-                                     ->get();
-        
+            ->whereBetween('amount', [$thresholdExclusion, $minimumAmount])
+            ->get();
+
             $percentageToSelect = $modePassation->percentage / 100;
             $countToSelect = ceil($eligibleMarkets->count() * $percentageToSelect);
-        
-            // Calculate space left before adding new markets
-            $spaceLeftBeforeAdding = $maxMarketsToAudit - $marketsToAudit->count();
-        
-            $finalCountToSelect = min($spaceLeftBeforeAdding, $countToSelect);
-        
-            if ($finalCountToSelect <= 0) break; // If no space left, break the loop
-        
-            $selectedMarkets = $eligibleMarkets->random($finalCountToSelect);
-        
-            $marketsToAudit = $marketsToAudit->merge($selectedMarkets);
-        
+
+            if ($countToSelect > 0) {
+                $selectedMarkets = $selectedMarkets->merge($eligibleMarkets->random(min($countToSelect, $eligibleMarkets->count())));
+            }
         }
 
-        $count2 = 0;
-        foreach($marketsToAudit as $market) {
-            if ($market->modePassation->id == 2)
-                $count1++;
-        }
-        
-        // Step 1: Fetch all eligible markets not included in the $marketsToAudit
-        $eligibleMarketIdsNotSelected = Market::whereBetween('amount', [$thresholdExclusion, $minimumAmount])
-                                                ->whereNotIn('id', $marketsToAudit->pluck('id'))
-                                                ->pluck('id');
+        // Check if the total exceeds the max allowed for audit BEFORE merging with marketsAboveMinimum.
+        $spaceLeftForRandomSelection = $maxMarketsToAudit - $marketsAboveMinimum->count();
 
-        // Step 2: Identify less important ModePassation markets with a connection to the selected markets
+        if ($selectedMarkets->count() > $spaceLeftForRandomSelection) {
+            $selectedMarkets = $selectedMarkets->random($spaceLeftForRandomSelection);
+        }
+
+        // Now merge the adjusted selectedMarkets with marketsAboveMinimum.
+        $marketsToAudit = $selectedMarkets->merge($marketsAboveMinimum)->unique('id');
+
+        $eligibleMarketIdsNotSelected = Market::whereBetween(
+            'amount',
+            [$thresholdExclusion, $minimumAmount]
+        )->whereNotIn('id', $marketsToAudit->pluck('id'))->pluck('id');
+
         $lessImportantMarkets = Market::whereIn('id', $eligibleMarketIdsNotSelected)
-                                            ->whereHas('modePassation', function ($query) {
-                                            // Assuming ModePassation has a 'rank' and you're looking for lower importance
-                                            // Adjust the logic here based on how you define "less important"
+            ->whereHas('modePassation', function ($query) {
                                             $query->orderBy('rank', 'desc');
                                             })
-                                            ->whereHas('attributaire', function ($query) use ($marketsToAudit) {
-                                            // Filter to include markets whose attributaire is also in the selected markets
-                                            $attributaireIds = $marketsToAudit->pluck('attributaire.id')->unique();
-                                            $query->whereIn('id', $attributaireIds);
-                                            })
-                                            ->paginate(10);
+            ->whereHas(
+                'attributaire',
+                function ($query) use ($marketsToAudit) {
+                    $attributaireIds = $marketsToAudit->pluck('attributaire.id')->unique();
+                    $query->whereIn('id', $attributaireIds);
+                }
+            )->paginate(10);
 
-        // Ensure unique markets in case of any overlap
         $marketsToAudit = $marketsToAudit->unique('id');
         $count = 0;
         foreach($marketsToAudit as $market) {
@@ -284,52 +300,62 @@ class MarketController extends Controller
 
         $allMarketIds = $marketsToAudit->pluck('id')->toArray();
 
-        $filteredMarkets = Market::whereIn('id', $allMarketIds)
-                                            ->orderBy('amount', 'desc')
-                                            ->get();
+        $filteredMarkets = Market::whereIn(
+            'id',
+            $allMarketIds
+        )
+        ->orderBy('amount', 'desc')
+        ->get();
+
         // Excel export
         if ($exportType === 'excel') {
-            return Excel::download(new class($filteredMarkets) implements FromCollection, WithHeadings {
-                private $data;
-    
-                public function __construct($data)
+            return Excel::download(
+                new class($filteredMarkets) implements FromCollection, WithHeadings
                 {
-                    $this->data = $data;
-                }
-    
-                public function collection()
-                {
-                    $this->data->load(['modePassation', 
-                                        'attributaire',
-                                        'marketType',
-                                        'secteur',
-                                        'cpmp',
-                                        'autoriteContractante'
-                                    ]);
+                    private $data;
 
-                    // Transform the data to include related model names instead of IDs
-                    $transformed = $this->data->map(function ($item) {
-                        return [
-                            'Numéro' => $item->numero,
-                            'Année' => $item->year,
-                            'Objet' => $item->title,
-                            'CPMP' => strtoupper($item->CPMP->name) ?? 'N/A',
-                            'Autorité contractante' => strtoupper($item->autoriteContractante->name) ?? 'N/A',
-                            //'Type de marché' => strtoupper($item->marketType->name) ?? 'N/A',
-                            'Mode de Passation' => strtoupper($item->modePassation->name) ?? 'N/A',
-                            'Secteur' => strtoupper($item->secteur->name) ?? 'N/A',
-                            'Montant' => $item->amount,
-                            'Financement' => $item->financement ?? 'N/A',
-                            'Attributaire' => strtoupper($item->attributaire->name) ?? 'N/A',
-                            'Date de signature' => $item->date_signature,
-                            'Date de notification' => $item->date_notification,
-                            'Date de publication' => $item->date_publication,
-                            'Délai d\'exécution' => $item->delai_execution,
+                    public function __construct($data)
+                    {
+                        $this->data = $data;
+                    }
 
-                        ];
-                    });
+                    public function collection()
+                    {
+                        $this->data->load([
+                            'modePassation',
+                            'attributaire',
+                            'marketType',
+                            'secteur',
+                            'cpmp',
+                            'autoriteContractante'
+                        ]);
 
-                    return $transformed;
+                        $transformed = $this->data->map(function ($item) {
+                            return [
+                                'Numéro' => $item->numero,
+                                'Année' => $item->year,
+                                'Objet' => $item->title,
+                                'CPMP' => strtoupper($item->CPMP->name) ?? 'N/A',
+                                'Autorité contractante' => strtoupper(
+                                    $item->autoriteContractante->name
+                                ) ?? 'N/A',
+                                //'Type de marché' => strtoupper($item->marketType->name) ?? 'N/A',
+                                'Mode de Passation' => strtoupper(
+                                    $item->modePassation->name
+                                ) ?? 'N/A',
+                                'Secteur' => strtoupper($item->secteur->name) ?? 'N/A',
+                                'Montant' => $item->amount,
+                                'Financement' => $item->financement ?? 'N/A',
+                                'Attributaire' => strtoupper($item->attributaire->name) ?? 'N/A',
+                                'Date de signature' => $item->date_signature,
+                                'Date de notification' => $item->date_notification,
+                                'Date de publication' => $item->date_publication,
+                                'Délai d\'exécution' => $item->delai_execution,
+
+                            ];
+                        });
+
+                        return $transformed;
                 }
     
                 public function headings(): array
@@ -349,10 +375,9 @@ class MarketController extends Controller
             return $pdf->download('markets.pdf');
         }
 
-        // Assuming $marketsToAudit is your collection of markets to be paginated
-        $perPage = 10; // The number of items per page
-        $page = FacadesRequest::get('page', 1); // Use Laravel's Request facade to get the current page or default to 1
-        $offset = ($page - 1) * $perPage; // Calculate the offset
+        $perPage = 10;
+        $page = FacadesRequest::get('page', 1);
+        $offset = ($page - 1) * $perPage;
         $filteredMarkets = $marketsToAudit;
 
         $marketsToAuditIds = $marketsToAudit->pluck('id');
@@ -365,27 +390,32 @@ class MarketController extends Controller
 
         $itemsForCurrentPage = $marketsToAudit->slice($offset, $perPage)->values();
 
-        // Create the paginator
         $paginatedMarkets = new LengthAwarePaginator(
-            $itemsForCurrentPage, // The items for the current page
-            $marketsToAudit->count(), // Total items in the collection
-            $perPage, // Items per page
-            $page, // Current page
+            $itemsForCurrentPage,
+            $marketsToAudit->count(),
+            $perPage,
+            $page,
             [
-                'path' => FacadesRequest::url(), // The path of the route
-                'query' => FacadesRequest::query(), // Query parameters
+                'path' => FacadesRequest::url(),
+                'query' => FacadesRequest::query(),
             ]
         );
 
-        $filteredMarketsWithRelations = Market::whereIn('id', $allMarketIds)
-                                           ->with(['modePassation', 'attributaire']) // Adjust based on needed relations
-                                           ->orderBy('amount', 'desc')
-                                           ->get();
+        $filteredMarketsWithRelations = Market::whereIn(
+            'id',
+            $allMarketIds
+        )
+        ->with(['modePassation', 'attributaire'])
+        ->orderBy('amount', 'desc')
+        ->get();
 
         // Calculate statistics based on $filteredMarketsWithRelations
-        $marketsAboveMinimumCount = $filteredMarketsWithRelations->where('amount', '>=', $minimumAmount)->count();
+        $marketsAboveMinimumCount = $filteredMarketsWithRelations->where(
+            'amount',
+            '>=',
+            $minimumAmount
+        )->count();
         
-        // Calculate the number of markets for each ModePassation within the filtered results
         $modePassationCounts = $filteredMarketsWithRelations->groupBy('modePassation.name')
                                                             ->map(function ($group) {
                                                                 return count($group);
@@ -395,22 +425,5 @@ class MarketController extends Controller
                                                         'lessImportantMarkets',
                                                         'marketsAboveMinimumCount', 
                                                         'modePassationCounts'));
-    }
-
-    // Define a method to fetch markets from less important ModePassation ranks based on conditions
-    private function getLessImportantMarkets($selectedMarketIds)
-    {
-        // Example logic, adjust as necessary based on exact requirements
-        $selectedMarkets = Market::whereIn('id', $selectedMarketIds)->get();
-        $selectedAutoriteContractanteIds = $selectedMarkets->pluck('authority_contracting');
-
-        $lessImportantMarketIds = Market::whereNotIn('id', $selectedMarketIds)
-                                        ->whereIn('authority_contracting', $selectedAutoriteContractanteIds)
-                                        ->whereHas('modePassation', function ($query) {
-                                            $query->orderBy('rank', 'desc');
-                                        })
-                                        ->pluck('id');
-
-        return $lessImportantMarketIds;
     }
 }
