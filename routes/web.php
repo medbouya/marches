@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttributaireController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuditSettingController;
 use App\Http\Controllers\AutoriteContractanteController;
 use App\Http\Controllers\CPMPController;
@@ -37,11 +38,41 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/audit-settings', [AuditSettingController::class, 'storeOrUpdate'])->name('audit-settings.storeOrUpdate');
 
-    Route::get('/markets/to_audit/summary', [MarketController::class, 'marketsToAuditSummary'])->name('markets.toAuditSummary');
-    Route::get('/markets/to_audit/{exportType?}', [MarketController::class, 'getFilteredMarkets'])->name('markets.toAudit');
+    Route::get(
+        '/markets/to_audit/summary',
+        [MarketController::class, 'marketsToAuditSummary']
+    )->name('markets.toAuditSummary');
+    Route::get(
+        '/markets/to_audit/{exportType?}',
+        [MarketController::class, 'getFilteredMarkets']
+    )->name('markets.toAudit');
+    Route::post(
+        '/market/selections/save',
+        [MarketController::class, 'saveMarketSelections']
+    )->name('market.selections.save');
     Route::resource('markets', MarketController::class);
 
-    Route::post('/mode-passations/update-rank', [ModePassationController::class, 'updateRank'])->name('mode-passations.updateRank');
+    Route::post(
+        '/mode-passations/update-rank',
+        [ModePassationController::class, 'updateRank']
+    )->name('mode-passations.updateRank');
+
+    // Audits
+    Route::get(
+        '/audits/audited',
+        [AuditController::class, 'auditedMarkets']
+    )->name('audits.audited');
+    Route::get(
+        '/audits/cancel',
+        [AuditController::class, 'cancelAudit']
+    )->name('audits.cancel');
+    Route::get(
+        '/audits/excel',
+        [AuditController::class, 'exportAuditsToExcel']
+    )->name('audits.export.excel');
+    Route::resource('audits', AuditController::class);
+    
+    // Modes de passation
     Route::resource('mode-passations', ModePassationController::class);
 
     Route::resource('autorite-contractantes', AutoriteContractanteController::class);

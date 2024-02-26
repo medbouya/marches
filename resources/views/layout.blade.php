@@ -135,6 +135,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ route('audits.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-layer-group"></i>
+              <p>
+                Audits
+              </p>
+            </a>
+          </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-tasks"></i>

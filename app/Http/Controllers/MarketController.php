@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attributaire;
+use App\Models\Audit;
 use App\Models\AuditSetting;
 use App\Models\AutoriteContractante;
 use App\Models\CPMP;
@@ -289,7 +290,7 @@ class MarketController extends Controller
                     $attributaireIds = $marketsToAudit->pluck('attributaire.id')->unique();
                     $query->whereIn('id', $attributaireIds);
                 }
-            )->paginate(10);
+            )->get();
 
         $marketsToAudit = $marketsToAudit->unique('id');
         $count = 0;
@@ -420,10 +421,42 @@ class MarketController extends Controller
                                                             ->map(function ($group) {
                                                                 return count($group);
                                                             });
+        // Checking if there audits are presents to hide validateSelection
+        $auditsCount = Audit::all()->count();
 
-        return view('markets.marketsToAudit', compact('paginatedMarkets', 
-                                                        'lessImportantMarkets',
-                                                        'marketsAboveMinimumCount', 
-                                                        'modePassationCounts'));
+        $auditStatus = false;
+
+        if ($auditsCount > 0) $auditStatus = true;
+
+        return view('markets.marketsToAudit', compact(
+            'paginatedMarkets',
+            'marketsToAuditIds',
+            'lessImportantMarkets',
+            'marketsAboveMinimumCount',
+            'modePassationCounts',
+            'auditStatus',
+        ));
+    }
+
+    public function saveMarketSelections(Request $request)
+    {
+        $selectedMarketIds = $request->input('selectedMarkets', []);
+        $marketsCount = 0;
+
+        foreach ($selectedMarketIds as $marketId) {
+            // Create a new Audit entry for each market ID
+            $audit = new Audit([
+                'market_id' => $marketId,
+                'audit_status' => false,
+            ]);
+            $audit->save();
+
+            $marketsCount++;
+        }
+
+        return redirect()->route('audits.index')->with(
+            'success',
+            'La sélection pour l\'audit a bien été enregistrée. Total des marchés: ' . $marketsCount
+        );
     }
 }

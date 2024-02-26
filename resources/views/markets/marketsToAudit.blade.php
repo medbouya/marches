@@ -1,5 +1,9 @@
 @extends('layout')
 
+@section('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css">
+@endsection
+
 @section('content')
     <div class="container">
         <h2>Marchés publics à auditer</h2>
@@ -31,9 +35,10 @@
             <div class="col">
                 <div class="collapse multi-collapse" id="multiCollapseExample1">
                     <div class="card card-body">
-                        <table class="table">
+                        <table id="eligibleMarketsTable" class="table">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th style="width=3rem;">Objet</th>
                                     <th>Année</th>
                                     <th>Montant</th>
@@ -44,6 +49,12 @@
                             <tbody>
                                 @forelse ($lessImportantMarkets as $market)
                                     <tr>
+                                        <td>
+                                            <input 
+                                                type="checkbox" 
+                                                name="selected_markets[]" 
+                                                value="{{ $market->id }}">
+                                        </td>
                                         <td>{{ ucfirst($market->title) }}</td>
                                         <td>{{ $market->year }}</td>
                                         <td>{{ number_format($market->amount, 2, '.', ',') }} MRU</td>
@@ -73,9 +84,6 @@
                                 @endforelse
                             </tbody>
                         </table>
-                        <div class="mt-3">
-                            {{ $lessImportantMarkets->links() }}
-                        </div>
                     </div>
                 </div>
             </div>
@@ -136,5 +144,59 @@
         <div class="mt-3">
             {{ $paginatedMarkets->links() }}
         </div>
+
+        <form 
+            id="auditSelectionForm" 
+            action="{{ route('market.selections.save') }}" 
+            method="POST" 
+            style="display: none;">
+            @csrf
+            @foreach($marketsToAuditIds as $marketId)
+                <input type="hidden" name="selectedMarkets[]" value="{{ $marketId }}">
+            @endforeach
+            <!-- Hidden inputs will be added here dynamically -->
+        </form>
+        @if($auditStatus !== true)
+            <div class="row d-flex justify-content-center m-2">
+                <a href="javascript:void(0);" id="validateSelection" class="btn btn-success btn-lg">
+                    Valider cette sélection pour l'audit
+                </a>
+            </div>
+        @endif
     </div>
+@endsection
+
+@section('js')
+
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#eligibleMarketsTable').DataTable({
+            "searching": true,
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/French.json"
+            }
+        });
+
+        $('#validateSelection').on('click', function() {
+            // Loop through checkboxes in the accordion to add them as hidden inputs
+            $('input[name="selected_markets[]"]:checked').each(function() {
+                // Only add if not already included (e.g., paginated markets)
+                if ($('#auditSelectionForm input[value="' + $(this).val() + '"]').length === 0) {
+                    $('#auditSelectionForm').append(
+                        '<input type="hidden" name="selectedMarkets[]" value="' + $(this).val() + '">');
+                }
+            });
+
+            // Submit the form
+            $('#auditSelectionForm').submit();
+        });
+    });
+</script>
+
 @endsection
