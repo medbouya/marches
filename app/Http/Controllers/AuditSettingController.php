@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditSetting;
+use App\Models\Market;
 use App\Models\MarketType;
 use App\Models\ModePassation;
 use Illuminate\Http\Request;
@@ -80,11 +81,26 @@ class AuditSettingController extends Controller
     {
         // Retrieve the auditSetting and marketTypes data from your database
         $auditSetting = AuditSetting::findOrFail($id);
-        $modePassations = ModePassation::all();
-        $marketTypes = MarketType::all(); // Adjust this query based on your data structure
+        $modePassations = ModePassation::all()->sortBy('rank');
+        $marketsCount = Market::all()->count();
+        $marketTypes = MarketType::all();
 
-        // Pass the data to the view
-        return view('audit_settings.edit', compact('auditSetting', 'marketTypes', 'modePassations'));
+        $modePassationsCounts = [];
+        foreach ($modePassations as $modePassation) {
+            $modePassationsCounts[$modePassation->id] = Market::where(
+                'passation_mode',
+                '=',
+                $modePassation->id
+            )->count();
+        }
+
+        return view('audit_settings.edit', compact(
+            'auditSetting',
+            'marketTypes',
+            'modePassations',
+            'marketsCount',
+            'modePassationsCounts'
+        ));
     }
 
     public function update(Request $request, AuditSetting $auditSetting)
