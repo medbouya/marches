@@ -205,18 +205,25 @@ class MarketController extends Controller
             $countToSelect = ceil($eligibleMarkets->count() * $percentageToSelect);
 
             if ($countToSelect > 0) {
-                $selectedMarkets = $selectedMarkets->merge($eligibleMarkets->random(min($countToSelect, $eligibleMarkets->count())));
+                $selectedMarkets = $selectedMarkets->merge(
+                    $eligibleMarkets->random(min($countToSelect, $eligibleMarkets->count()))
+                );
             }
         }
 
-        $spaceLeftForRandomSelection = $maxMarketsToAudit - $marketsAboveMinimum->count();
+        // First, ensure you don't exceed $maxMarketsToAudit when merging
+        $potentialMarketsToAudit = $selectedMarkets->merge($marketsAboveMinimum)->unique('id');
 
-        if ($selectedMarkets->count() > $spaceLeftForRandomSelection) {
-            $selectedMarkets = $selectedMarkets->random($spaceLeftForRandomSelection);
+        if ($potentialMarketsToAudit->count() > $maxMarketsToAudit) {
+            // If the potential markets exceed the max allowed, reduce the selection
+            $marketsToAudit = $potentialMarketsToAudit->random($maxMarketsToAudit);
+        } else {
+            // If within limits, proceed with all potential markets
+            $marketsToAudit = $potentialMarketsToAudit;
         }
 
         // Now merge the adjusted selectedMarkets with marketsAboveMinimum.
-        $marketsToAudit = $selectedMarkets->merge($marketsAboveMinimum)->unique('id');
+        $marketsToAudit = $marketsToAudit->unique('id');
 
         $marketsAboveMinimumCount = $marketsToAudit->where(
             'amount',
@@ -261,19 +268,25 @@ class MarketController extends Controller
             $countToSelect = ceil($eligibleMarkets->count() * $percentageToSelect);
 
             if ($countToSelect > 0) {
-                $selectedMarkets = $selectedMarkets->merge($eligibleMarkets->random(min($countToSelect, $eligibleMarkets->count())));
+                $selectedMarkets = $selectedMarkets->merge(
+                    $eligibleMarkets->random(min($countToSelect, $eligibleMarkets->count()))
+                );
             }
         }
 
-        // Check if the total exceeds the max allowed for audit BEFORE merging with marketsAboveMinimum.
-        $spaceLeftForRandomSelection = $maxMarketsToAudit - $marketsAboveMinimum->count();
+        // First, ensure you don't exceed $maxMarketsToAudit when merging
+        $potentialMarketsToAudit = $selectedMarkets->merge($marketsAboveMinimum)->unique('id');
 
-        if ($selectedMarkets->count() > $spaceLeftForRandomSelection) {
-            $selectedMarkets = $selectedMarkets->random($spaceLeftForRandomSelection);
+        if ($potentialMarketsToAudit->count() > $maxMarketsToAudit) {
+            // If the potential markets exceed the max allowed, reduce the selection
+            $marketsToAudit = $potentialMarketsToAudit->random($maxMarketsToAudit);
+        } else {
+            // If within limits, proceed with all potential markets
+            $marketsToAudit = $potentialMarketsToAudit;
         }
 
         // Now merge the adjusted selectedMarkets with marketsAboveMinimum.
-        $marketsToAudit = $selectedMarkets->merge($marketsAboveMinimum)->unique('id');
+        $marketsToAudit = $marketsToAudit->unique('id');
 
         $eligibleMarketIdsNotSelected = Market::whereBetween(
             'amount',
