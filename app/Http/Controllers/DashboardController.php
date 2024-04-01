@@ -29,9 +29,15 @@ class DashboardController extends Controller
         ->where('year', $auditionYear)
         ->get();
 
+        $totalMarkets = Market::where(
+            'year',
+            $auditionYear
+        )->get();
+
         // Calculate the total count and then the number of markets based on audition_percentage
-        $totalMarketCount = $marketsCount->count();
-        $auditedMarketCount = ceil(($auditionPercentage / 100.0) * $totalMarketCount);
+        $totalMarketCount = $totalMarkets->count();
+        $totalMarketAuditCount = $marketsCount->count();
+        $auditedMarketCount = ceil(($auditionPercentage / 100.0) * $totalMarketAuditCount);
         $minimumAmount = $auditSetting->minimum_amount_to_audit;
         $thresholdAudition = $auditSetting->threshold_exclusion;
 
