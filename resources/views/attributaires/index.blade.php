@@ -4,7 +4,7 @@
     <div class="container">
         <h2>Attributaires</h2>
         <a href="{{ route('attributaires.create') }}" class="btn btn-primary mb-2">Nouvel attributaire</a>
-        <table class="table">
+        <table class="table table-sm table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>

@@ -12,7 +12,7 @@
                 <i>Marchés dépassant le seuil minimum d'audit:</i> <b>{{ $marketsAboveMinimumCount }}</b>
             </li>
             @foreach($modePassationCounts as $modePassationName => $count)
-               <li class="list-group-item"> <i>{{ $modePassationName }}:</i> <b>{{ $count }}</b></li>
+            <li class="list-group-item"> <i>{{ $modePassationName }}:</i> <b>{{ $count }}</b></li>
             @endforeach
         </ul>
         <a href="{{ route('markets.toAudit', 'excel') }}" class="btn btn-success m-1">
@@ -90,7 +90,7 @@
         </div>
 
 
-        <table class="table">
+        <table class="table table-sm table-bordered table-striped table-hover">
             <thead>
                 <tr>
                     <th style="width=3rem;"  scope="col">Objet</th>
@@ -104,15 +104,19 @@
             <tbody>
                 @forelse ($paginatedMarkets as $market)
                     <tr>
-                        <td>{{ ucfirst($market->title) }}</td>
+                        <td class="font-italic">{{ ucfirst($market->title) }}</td>
                         <td><span class="badge badge-secondary">{{ $market->year }}</span></td>
-                        <td>{{ number_format($market->amount, 2, '.', ',') }} MRU</td>
+                        <td>
+                            <span class="badge badge-sm badge-pill badge-info">
+                                {{ number_format($market->amount, 2, '.', ',') }} MRU
+                            </span>
+                        </td>
                         <td>
                             <span class="badge badge-pill badge-success">
                                 {{ ucfirst($market->modePassation->name) }}
                             </span>
                         </td>
-                        <td>
+                        <td class="font-weight-bold text-center">
                             {{ ucfirst($market->autoriteContractante->name) }}
                         </td>
                         <td>

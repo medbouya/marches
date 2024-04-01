@@ -4,7 +4,7 @@
     <div class="container">
         <h2>CPMPs</h2>
         <a href="{{ route('cpmps.create') }}" class="btn btn-primary mb-2">Nouvelle commission de passation de marchés</a>
-        <table class="table">
+        <table class="table table-sm table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>

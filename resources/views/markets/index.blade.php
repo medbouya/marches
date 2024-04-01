@@ -6,7 +6,7 @@
 
         <a href="{{ route('markets.create') }}" class="btn btn-success m-1">Ajouter</a>
 
-        <table class="table">
+        <table class="table table-sm table-bordered table-striped table-hover">
             <thead>
                 <tr>
                     <th style="width=3rem;">Objet</th>
@@ -19,9 +19,17 @@
             <tbody>
                 @forelse ($markets as $market)
                     <tr>
-                        <td>{{ ucfirst($market->title) }}</td>
-                        <td>{{ $market->year }}</td>
-                        <td>{{ number_format($market->amount, 2, '.', ',') }} MRU</td>
+                        <td class="text-justify font-italic mr-1">{{ ucfirst($market->title) }}</td>
+                        <td>
+                            <span class="badge badge-sm badge-primary">
+                                {{ $market->year }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-sm badge-success">
+                                {{ number_format($market->amount, 2, '.', ',') }} MRU
+                            </span>
+                        </td>
                         <td>{{ ucfirst($market->autoriteContractante->name) }}</td>
                         <td>
                             {{-- Add dropdown for edit and delete actions --}}

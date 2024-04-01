@@ -16,7 +16,7 @@
             Export <i class="nav-icon fas fa-file-excel"></i>
         </a>
         @endif
-        <table class="table">
+        <table class="table table-sm table-striped table-bordered table-hover">
             <thead>
                 <tr>
                     <th style="width=3rem;">Objet</th>
@@ -29,8 +29,12 @@
             <tbody>
                 @forelse ($audits as $audit)
                     <tr>
-                        <td>{{ ucfirst($audit->market->title) }}</td>
-                        <td>{{ number_format($audit->market->amount, 2, '.', ',') }} MRU</td>
+                        <td class="font-italic">{{ ucfirst($audit->market->title) }}</td>
+                        <td>
+                            <span class="badge badge-sm badge-info">
+                                {{ number_format($audit->market->amount, 2, '.', ',') }} MRU
+                            </span>
+                        </td>
                         <td>
                             <span class="badge badge-primary badge-sm"> 
                                 {{ ucfirst($audit->market->modePassation->name) }}

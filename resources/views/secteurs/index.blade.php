@@ -4,7 +4,7 @@
     <div class="container">
         <h2>Secteurs</h2>
         <a href="{{ route('secteurs.create') }}" class="btn btn-primary mb-2">Nouveau secteur</a>
-        <table class="table">
+        <table class="table table-sm table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>

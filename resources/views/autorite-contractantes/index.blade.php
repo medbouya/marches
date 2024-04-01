@@ -4,7 +4,7 @@
     <h1>Autorités contractantes</h1>
     <a href="{{ route('autorite-contractantes.create') }}" class="btn btn-primary">Nouvelle autorité contractante</a>
 
-    <table class="table">
+    <table class="table table-sm table-bordered table-hover">
         <thead>
             <tr>
                 <th>ID</th>

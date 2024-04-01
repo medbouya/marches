@@ -9,7 +9,7 @@
             <a href="{{ route('audit-settings.create') }}" class="btn btn-success m-1">Créer</a>
         @endif
 
-        <table class="table">
+        <table class="table table-sm table-bordered table-hover">
             <thead>
                 <tr>
                     <th>Année</th>

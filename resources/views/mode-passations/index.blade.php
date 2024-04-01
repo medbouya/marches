@@ -18,7 +18,7 @@
     </a>
     <form id="rank-update" action="{{ route('mode-passations.updateRank') }}" method="POST">
         @csrf
-        <table class="table">
+        <table class="table table-sm table-bordered table-hover">
             <thead>
                 <tr>
                     <th>Changer le rang</th>
