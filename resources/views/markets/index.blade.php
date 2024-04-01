@@ -6,7 +6,7 @@
 
         <a href="{{ route('markets.create') }}" class="btn btn-success m-1">Ajouter</a>
 
-        <table class="table table-sm table-bordered table-striped table-hover">
+        <table class="table table-sm table-responsive table-bordered table-striped table-hover">
             <thead>
                 <tr>
                     <th style="width=3rem;">Objet</th>

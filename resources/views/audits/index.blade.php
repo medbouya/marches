@@ -16,7 +16,7 @@
             Export <i class="nav-icon fas fa-file-excel"></i>
         </a>
         @endif
-        <table class="table table-sm table-striped table-bordered table-hover">
+        <table class="table table-sm table-responsive table-striped table-bordered table-hover">
             <thead>
                 <tr>
                     <th style="width=3rem;">Objet</th>

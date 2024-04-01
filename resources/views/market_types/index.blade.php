@@ -6,7 +6,7 @@
     <h1>Types de marchés</h1>
     <a href="{{ route('market-types.create') }}" class="btn btn-primary">Nouveau type de marchés</a>
 
-    <table class="table table-sm table-bordered table-hover">
+    <table class="table table-sm table-responsive table-bordered table-hover">
         <thead>
             <tr>
                 <th>ID</th>

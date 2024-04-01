@@ -90,7 +90,7 @@
         </div>
 
 
-        <table class="table table-sm table-bordered table-striped table-hover">
+        <table class="table table-sm table-responsive table-bordered table-striped table-hover">
             <thead>
                 <tr>
                     <th style="width=3rem;"  scope="col">Objet</th>
