@@ -186,18 +186,19 @@ class MarketController extends Controller
         $minimumAmount = $auditSetting->minimum_amount_to_audit;
         $thresholdExclusion = $auditSetting->threshold_exclusion;
         $auditionPercentage = $auditSetting->audition_percentage;
+        $auditionYear = $auditSetting->year;
 
-        $totalMarketsCount = Market::all()->count();
+        $totalMarketsCount = Market::where('year', $auditionYear)->count();
         $maxMarketsToAudit = ceil($totalMarketsCount * ($auditionPercentage / 100.0));
 
-        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->get();
+        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->where('year', $auditionYear)->get();
 
         $modePassations = ModePassation::orderBy('rank')->get();
         $selectedMarkets = collect([]);
 
         foreach ($modePassations as $modePassation) {
             // Fetch markets eligible under each mode of passation within the specified amount range.
-            $eligibleMarkets = Market::where('passation_mode', $modePassation->id)
+            $eligibleMarkets = Market::where('passation_mode', $modePassation->id)->where('year', $auditionYear)
                 ->whereBetween('amount', [$thresholdExclusion, $minimumAmount])
                 ->get();
 
@@ -249,18 +250,19 @@ class MarketController extends Controller
         $minimumAmount = $auditSetting->minimum_amount_to_audit;
         $thresholdExclusion = $auditSetting->threshold_exclusion;
         $auditionPercentage = $auditSetting->audition_percentage;
+        $auditionYear = $auditSetting->year;
 
-        $totalMarketsCount = Market::all()->count();
+        $totalMarketsCount = Market::where('year', $auditionYear)->count();
         $maxMarketsToAudit = ceil($totalMarketsCount * ($auditionPercentage / 100.0));
 
-        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->get();
+        $marketsAboveMinimum = Market::where('amount', '>=', $minimumAmount)->where('year', $auditionYear)->get();
 
         $modePassations = ModePassation::orderBy('rank')->get();
         $selectedMarkets = collect([]);
 
         foreach ($modePassations as $modePassation) {
             // Fetch markets eligible under each mode of passation within the specified amount range.
-            $eligibleMarkets = Market::where('passation_mode', $modePassation->id)
+            $eligibleMarkets = Market::where('passation_mode', $modePassation->id)->where('year', $auditionYear)
             ->whereBetween('amount', [$thresholdExclusion, $minimumAmount])
             ->get();
 
@@ -291,7 +293,7 @@ class MarketController extends Controller
         $eligibleMarketIdsNotSelected = Market::whereBetween(
             'amount',
             [$thresholdExclusion, $minimumAmount]
-        )->whereNotIn('id', $marketsToAudit->pluck('id'))->pluck('id');
+        )->where('year', $auditionYear)->whereNotIn('id', $marketsToAudit->pluck('id'))->pluck('id');
 
         $lessImportantMarkets = Market::whereIn('id', $eligibleMarketIdsNotSelected)
             ->whereHas('modePassation', function ($query) {
@@ -318,6 +320,7 @@ class MarketController extends Controller
             'id',
             $allMarketIds
         )
+            ->where('year', $auditionYear)
         ->orderBy('amount', 'desc')
         ->get();
 
