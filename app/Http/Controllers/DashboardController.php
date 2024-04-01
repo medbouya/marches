@@ -23,8 +23,11 @@ class DashboardController extends Controller
         // Fetch the minimum amount from the current AuditSetting
         $minimumAmount = $auditSetting->minimum_amount_to_audit;
         $auditionPercentage = $auditSetting->audition_percentage;
+        $auditionYear = $auditSetting->year;
 
-        $marketsCount = Market::get(); // Adjust according to your specific requirements
+        $marketsCount = Market::where('amount', '>=', $minimumAmount)
+        ->where('year', $auditionYear)
+        ->get();
 
         // Calculate the total count and then the number of markets based on audition_percentage
         $totalMarketCount = $marketsCount->count();
