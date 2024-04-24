@@ -248,7 +248,6 @@ class MarketController extends Controller
     {
         $auditSetting = AuditSetting::firstOrFail();
         $minimumAmount = $auditSetting->minimum_amount_to_audit;
-        $thresholdExclusion = $auditSetting->threshold_exclusion;
         $auditionPercentage = $auditSetting->audition_percentage;
         $auditionYear = $auditSetting->year;
 
@@ -262,9 +261,15 @@ class MarketController extends Controller
 
         foreach ($modePassations as $modePassation) {
             // Fetch markets eligible under each mode of passation within the specified amount range.
-            $eligibleMarkets = Market::where('passation_mode', $modePassation->id)->where('year', $auditionYear)
-            ->whereBetween('amount', [$thresholdExclusion, $minimumAmount])
-            ->get();
+            $eligibleMarkets = Market::with('marketType')
+                ->where('passation_mode', $modePassation->id)
+                ->where('year', $auditionYear)
+                ->get()
+                ->filter(function ($market) use ($minimumAmount) {
+                    // Here we access the minimum_threshold from the market's marketType dynamically
+                    $threshold = $market->marketType ? $market->marketType->minimum_threshold : 0;
+                    return $market->amount >= $threshold && $market->amount <= $minimumAmount;
+                });
 
             $percentageToSelect = $modePassation->percentage / 100;
             $countToSelect = ceil($eligibleMarkets->count() * $percentageToSelect);
@@ -290,10 +295,16 @@ class MarketController extends Controller
         // Now merge the adjusted selectedMarkets with marketsAboveMinimum.
         $marketsToAudit = $marketsToAudit->unique('id');
 
-        $eligibleMarketIdsNotSelected = Market::whereBetween(
-            'amount',
-            [$thresholdExclusion, $minimumAmount]
-        )->where('year', $auditionYear)->whereNotIn('id', $marketsToAudit->pluck('id'))->pluck('id');
+        $eligibleMarketIdsNotSelected = Market::with('marketType')
+        ->where('year', $auditionYear)
+        ->whereNotIn('id', $marketsToAudit->pluck('id'))
+        ->get()  // We fetch the markets first to be able to apply a dynamic filter
+        ->filter(function ($market) use ($minimumAmount) {
+            // Dynamically check against the minimum_threshold from marketType
+            $minimumThreshold = $market->marketType ? $market->marketType->minimum_threshold : 0;
+            return $market->amount >= $minimumThreshold && $market->amount <= $minimumAmount;
+        })
+        ->pluck('id');
 
         $lessImportantMarkets = Market::whereIn('id', $eligibleMarketIdsNotSelected)
             ->whereHas('modePassation', function ($query) {

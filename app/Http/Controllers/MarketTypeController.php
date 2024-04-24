@@ -20,13 +20,13 @@ class MarketTypeController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:market_types'
+        $request->validate(['name' => 'required|string|unique:market_types',
+            'minimum_threshold' => 'required|integer',
         ]);
 
         MarketType::create($request->all());
 
-        return redirect()->route('market-types.index')->with('success', 'Market type created successfully');
+        return redirect()->route('market-types.index')->with('success', 'Type de marché créé avec succès');
     }
 
     public function edit($id)
@@ -39,18 +39,18 @@ class MarketTypeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|unique:market_types,name,' . $marketType->id,
-            // Add more validation rules as needed
+            'minimum_threshold' => 'required|integer',
         ]);
 
         $marketType->update($request->all());
 
-        return redirect()->route('market-types.index')->with('success', 'Market type updated successfully');
+        return redirect()->route('market-types.index')->with('success', 'Type de marché mis à jour avec succès');
     }
 
     public function destroy(MarketType $marketType)
     {
         $marketType->delete();
 
-        return redirect()->route('market-types.index')->with('success', 'Market type deleted successfully');
+        return redirect()->route('market-types.index')->with('success', 'Type de marché supprimé avec succès.');
     }
 }

@@ -10,6 +10,8 @@
         <div class="form-group col-6">
             <label for="name">Nom</label>
             <input type="text" name="name" id="name" class="form-control" required>
+            <label for="minimum_threshold">Seuil minimum</label>
+            <input type="number" name="minimum_threshold" id="minimum_threshold" class="form-control" required>
         </div>
 
         <!-- Add more fields as needed -->

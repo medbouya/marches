@@ -51,13 +51,15 @@
                             @foreach ($auditSetting->marketTypes as $marketType)
                                 <h5>
                                     <span class="badge badge-warning">
-                                        {{ $marketType->name }}
+                                        <li class="list-group-item">
+                                            <i>{{ $marketType->name }}</i>: <b>{{ number_format($marketType->minimum_threshold, 2, ".", ",") }} MRU</b>
+                                        </li>
                                     </span>
                                 </h5> @if (!$loop->last)  @endif
                             @endforeach
                         </td>
                         <td>
-                            <ul class="list-group">
+                            <ul class="list-group w-100">
                                 @foreach ($modesPassation as $modePassation)
                                     <li class="list-group-item">
                                         <i>{{ $modePassation->name }}</i>: <b>{{ $modePassation->percentage }}%</b>

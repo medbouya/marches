@@ -9,8 +9,10 @@
         @csrf
         @method('PUT')
         <div class="form-group">
-            <label for="name">Name</label>
+            <label for="name">Nom</label>
             <input type="text" name="name" id="name" class="form-control" value="{{ $marketType->name }}" required>
+            <label for="minimum_threshold">Seuil minimum</label>
+            <input type="number" name="minimum_threshold" id="minimum_threshold" class="form-control" value="{{ $marketType->minimum_threshold }}" required>
         </div>
 
         <!-- Add more fields as needed -->

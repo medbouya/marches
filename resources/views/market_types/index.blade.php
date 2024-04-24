@@ -11,6 +11,7 @@
             <tr>
                 <th>ID</th>
                 <th>Nom</th>
+                <th>Seuil minimum</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -19,6 +20,7 @@
                 <tr>
                     <td>{{ $marketType->id }}</td>
                     <td>{{ ucfirst($marketType->name) }}</td>
+                    <td>{{ number_format($marketType->minimum_threshold, 2, '.', ',') }} MRU</td>
                     <td>
                         <a href="{{ route('market-types.edit', $marketType->id) }}" class="btn btn-sm btn-warning">Modifier</a>
                         <form action="{{ route('market-types.destroy', $marketType->id) }}" method="post" class="d-inline">
