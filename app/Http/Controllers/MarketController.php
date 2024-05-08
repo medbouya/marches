@@ -266,9 +266,13 @@ class MarketController extends Controller
                 ->where('year', $auditionYear)
                 ->get()
                 ->filter(function ($market) use ($minimumAmount) {
-                    // Here we access the minimum_threshold from the market's marketType dynamically
+                // Here we access the minimum_threshold from the market's marketType dynamically
+                // Check exemption based on specific AutoriteContractante market type and secteur
+                if ($market->autoriteContractante && $market->amount < 20000000 && $market->autoriteContractante->isExempted($market->marketType, $market->secteur)) {
+                    return false; // Skip this market if it matches the specific exempted criteria
+                }
                     $threshold = $market->marketType ? $market->marketType->minimum_threshold : 0;
-                    return $market->amount >= $threshold && $market->amount <= $minimumAmount;
+                return $market->amount >= $threshold;
                 });
 
             $percentageToSelect = $modePassation->percentage / 100;
@@ -417,7 +421,7 @@ class MarketController extends Controller
                         });
 
         $itemsForCurrentPage = $marketsToAudit->slice($offset, $perPage)->values();
-
+        $totalNumberOfMarkets = $marketsToAudit->count();
         $paginatedMarkets = new LengthAwarePaginator(
             $itemsForCurrentPage,
             $marketsToAudit->count(),
@@ -462,6 +466,7 @@ class MarketController extends Controller
             'marketsAboveMinimumCount',
             'modePassationCounts',
             'auditStatus',
+            'totalNumberOfMarkets',
         ));
     }
 

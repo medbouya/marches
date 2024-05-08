@@ -9,6 +9,9 @@
         <h2>Marchés publics à auditer</h2>
         <ul class="list-group">
             <li class="list-group-item">
+                <i>Marchés à auditer:</i> <b>{{ $totalNumberOfMarkets }}</b>
+            </li>
+            <li class="list-group-item">
                 <i>Marchés dépassant le seuil minimum d'audit:</i> <b>{{ $marketsAboveMinimumCount }}</b>
             </li>
             @foreach($modePassationCounts as $modePassationName => $count)
@@ -43,6 +46,7 @@
                                     <th>Année</th>
                                     <th>Montant</th>
                                     <th>Attributaire</th>
+                                    <th>Autorité contractante</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -59,6 +63,7 @@
                                         <td>{{ $market->year }}</td>
                                         <td>{{ number_format($market->amount, 2, '.', ',') }} MRU</td>
                                         <td>{{ ucfirst($market->attributaire->name) }}</td>
+                                        <td>{{ ucfirst($market->autoriteContractante->name) }}</td>
                                         <td>
                                             {{-- Add dropdown for edit and delete actions --}}
                                             <div class="dropdown">

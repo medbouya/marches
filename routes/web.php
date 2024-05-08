@@ -10,6 +10,7 @@ use App\Http\Controllers\MarketController;
 use App\Http\Controllers\MarketImportController;
 use App\Http\Controllers\MarketTypeController;
 use App\Http\Controllers\ModePassationController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SecteurController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -111,5 +112,7 @@ Route::middleware(['auth'])->group(function () {
         '/roles/{role}/permissions',
         [RoleController::class, 'updatePermissions']
     )->name('roles.updatePermissions');
+    // Reports
+    Route::get('/report/download', 'ReportController@generateReport')->name('reports.download');
 
 });

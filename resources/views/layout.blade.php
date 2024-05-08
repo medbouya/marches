@@ -210,6 +210,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ route('reports.download') }}" class="nav-link">
+              <i class="nav-icon fas fa-file"></i>
+              <p>
+                Rapports
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
